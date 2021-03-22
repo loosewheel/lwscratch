@@ -7,6 +7,9 @@ Licence
 Code licence:
 LGPL 2.1
 
+Media licence:
+CC-BY-SA 3.0
+
 
 Version
 =======
@@ -36,7 +39,7 @@ Copy the 'lwscratch' folder to your mods folder.
 
 Bug Report
 ==========
-
+https://forum.minetest.net/viewtopic.php?f=9&t=26455
 
 
 Description
