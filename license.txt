@@ -1,0 +1,45 @@
+Source code license
+-------------------
+
+GNU Lesser General Public License, version 2.1
+Copyright (C) 2021 loosewheel
+
+This program is free software; you can redistribute it and/or modify it under the terms
+of the GNU Lesser General Public License as published by the Free Software Foundation;
+either version 2.1 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Lesser General Public License for more details:
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+
+
+Media license
+-------------
+Round button backgrounds are derived from author qubodup's work, released
+as public domain. See https://opengameart.org/content/pony-icons-pink
+
+Thumb and trash images derived from images from https://openclipart.org, and
+is public domain.
+
+All other media licensed Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+
+You are free to:
+Share — copy and redistribute the material in any medium or format.
+Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+Attribution — You must give appropriate credit, provide a link to the license, and
+indicate if changes were made. You may do so in any reasonable manner, but not in any way
+that suggests the licensor endorses you or your use.
+
+ShareAlike — If you remix, transform, or build upon the material, you must distribute
+your contributions under the same license as the original.
+
+No additional restrictions — You may not apply legal terms or technological measures that
+legally restrict others from doing anything the license permits.
+
+See http://creativecommons.org/licenses/by-sa/3.0/

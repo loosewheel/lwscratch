@@ -1,0 +1,8 @@
+# Interval for every robot running tick in seconds
+lwscratch_running_tick (Running interval seconds) float 0.1
+
+# Delay in seconds for a robot's action, min 0.1
+lwscratch_robot_action_delay (Robot's action delay) float 0.2
+
+# Delay in seconds for a robot's movement, min 0.1
+lwscratch_robot_move_delay (Robot's movement delay) float 0.5
