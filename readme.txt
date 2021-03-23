@@ -13,7 +13,7 @@ CC-BY-SA 3.0
 
 Version
 =======
-0.1.0
+0.1.1
 
 
 Minetest Version
@@ -57,16 +57,16 @@ retained across world startups. Robots retain their persistence state when
 moved. The maximum force loaded blocks is limited to the
 max_forceloaded_blocks setting (default is 16).
 
-Each robot can be given a name, by entering the name in the name field and
+Each robot can be given a name, by entering the name in the Name field and
 clicking the Set button. The name will display when the robot is pointed
 at or as the tool tip if it is in an inventory.
 
-Each robot has a storage area (bottom left).
+Each robot has a storage area (center left).
 
 While a robot is running sneak + punch will open a form to stop it.
 
 Robots are programmed graphically, by dragging a command from a pallet
-(top left) to the program sheet (top right). Items can be dragged from the
+(top right) to the program sheet (left). Items can be dragged from the
 inventories. These are only markers, the item is not used. To remove an
 item from the program sheet, drag it to an empty space in the command pallet.
 To clear the whole program click the clear button. Commands are run in order,
@@ -105,10 +105,10 @@ If
 Values:
 
 Number
-	Can be set with an number value when placed (or moved) in the program
-	sheet. An input field and button labelled Number appear. Set the value
-	and click the button to set the value. Hovering over the number item
-	the tool tip displays its current value.
+	Can be set with an number value. To set the value, place it in the value
+	slot at the top, enter the desired value in the Value field and click
+	the Set button. Hovering over the number item, the tool tip displays its
+	current value.
 
 
 Conditions:

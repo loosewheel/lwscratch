@@ -105,6 +105,7 @@ function utils.new_inventory ()
 
 	local inv =
 		"{ "..
+		"value = { [1] = '' }, "..
 		"program = { "..program.."}, "..
 		"commands = { "..commands.."}, "..
 		"storage = { [1] = '', [2] = '', [3] = '', [4] = '', [5] = '', [6] = '', [7] = '', [8] = '', "..
@@ -443,29 +444,23 @@ end
 
 
 function utils.get_robot_formspec (pos)
-	local set_number = ""
 	local persists =
-		"image_button[21.45,3.0;0.7,0.7;persist_button_off.png;persists;;false;false;persist_button_off.png]"
+		"image_button[21.05,3.0;0.7,0.7;persist_button_off.png;persists;;false;false;persist_button_off.png]"
 	local power =
-		"image_button[21.1,1.0;1.4,1.4;power_button_off.png;power;;false;false;power_button_off.png]"
+		"image_button[20.7,1.0;1.4,1.4;power_button_off.png;power;;false;false;power_button_off.png]"
 	local error_msg = ""
+
 	local meta = minetest.get_meta (pos)
 
 	if meta then
-		if meta:get_int ("number_index") > 0 then
-			set_number =
-				"field[5.5,2.0;2.0,0.8;number_value;;"..tonumber (meta:get_int ("number_value")).."]"..
-				"button[7.7,2.0;2.0,0.8;set_number;Number]"
-		end
-
 		if meta:get_int ("persists") == 1 then
 			persists =
-				"image_button[21.45,3.0;0.7,0.7;persist_button_on.png;persists;;false;false;persist_button_on.png]"
+				"image_button[21.05,3.0;0.7,0.7;persist_button_on.png;persists;;false;false;persist_button_on.png]"
 		end
 
 		if meta:get_int ("running") == 1 then
 			power =
-				"image_button[21.1,1.0;1.4,1.4;power_button_on.png;power;;false;false;power_button_on.png]"
+				"image_button[20.7,1.0;1.4,1.4;power_button_on.png;power;;false;false;power_button_on.png]"
 		end
 
 		local msg = meta:get_string ("error")
@@ -473,50 +468,54 @@ function utils.get_robot_formspec (pos)
 		if msg:len () > 0 then
 			error_msg =
 				"style_type[label;textcolor=red]"..
-				"label[10.0,9.4;"..minetest.formspec_escape (msg).."]"..
+				"label[1.0,17.4;"..minetest.formspec_escape (msg).."]"..
 				"style_type[label;textcolor=white]"
 		end
 	end
 
 	local spec =
 		"formspec_version[3]"..
-		"size[23.5,15.65,false]"..
+		"size[22.8,18.0,false]"..
 		"no_prepend[]"..
 		"bgcolor[#769BE6]"..
 
-		"field[1.0,1.0;4.0,0.8;name;name;${name}]"..
-		"button[5.5,1.0;1.5,0.8;setname;Set]"..
-		"label[1.0,2.6;Commands]"..
-		set_number..
+		"field[1.0,1.0;2.5,0.8;name;Name;${name}]"..
+		"button[3.5,1.0;1.0,0.8;setname;Set]"..
+		"button[5.3,1.0;1.4,0.8;clear_program;Clear]"..
 
 		"style_type[list;noclip=false;size=1.0,1.0;spacing=0.0,0.0]"..
-		"scrollbaroptions[min=0;max=40;smallstep=10;largestep=10;thumbsize=10;arrows=default]"..
-		"scrollbar[9.0,3.0;0.5,6.0;vertical;commands_scroll;0-40]"..
-		"scroll_container[1.0,3.0;8.0,6.0;commands_scroll;vertical;0.1]"..
-		"list[context;commands;0.0,0.0;8,10;]\n"..
-		"scroll_container_end[]"..
+		-- value
+		"list[context;value;7.4,0.9;1,1;]\n"..
+		"field[8.5,1.0;2.0,0.8;number_value;Value;]"..
+		"button[10.5,1.0;1.0,0.8;set_number;Set]"..
 
-		"scrollbaroptions[min=0;max=420;smallstep=30;largestep=70;thumbsize=50;arrows=default]"..
-		"scrollbar[20.0,1.0;0.5,8.0;vertical;program_scroll;0-420]"..
-		"scroll_container[10.0,1.0;10.0,8.0;program_scroll;vertical;0.1]"..
+		-- program
+		"scrollbaroptions[min=0;max=350;smallstep=30;largestep=70;thumbsize=105;arrows=default]"..
+		"scrollbar[11.0,2.0;0.5,15.0;vertical;program_scroll;0-350]"..
+		"scroll_container[1.0,2.0;10.0,15.0;program_scroll;vertical;0.1]"..
 		"list[context;program;0.0,0.0;10,50;]\n"..
 		"scroll_container_end[]"..
 
-		"button[21.1,8.2;1.4,0.8;clear_program;Clear]"..
+		-- commands
+		"scrollbaroptions[min=0;max=50;smallstep=10;largestep=10;thumbsize=25;arrows=default]"..
+		"scrollbar[20.0,1.0;0.5,5.0;vertical;commands_scroll;0-50]"..
+		"scroll_container[12.0,1.0;8.0,5.0;commands_scroll;vertical;0.1]"..
+		"list[context;commands;0.0,0.0;8,10;]\n"..
+		"scroll_container_end[]"..
+
 		power..
 		persists..
-		"label[1.0,9.5;Storage]"..
 		error_msg..
 
+		-- inventories
 		"style_type[list;noclip=false;size=1.0,1.0;spacing=0.25,0.25]"..
-		"list[context;storage;1.0,9.9;8,4;]"..
-		"list[current_player;main;12.75,9.9;8,4;]"..
+		"list[context;storage;12.0,6.7;8,4;]"..
+		"list[current_player;main;12.0,12.2;8,4;]"..
 		"listring[]"..
 		"listcolors[#545454;#6E6E6E;#6281BF]"
 
 	return spec
 end
-
 
 
 

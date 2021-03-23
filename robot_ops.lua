@@ -132,6 +132,8 @@ function utils.robot_move (robot_pos, side)
 		storage[s] = inv:get_stack ("storage", s)
 	end
 
+	local value_slot = inv:get_stack ("value", 1)
+
 	if persists == 1 then
 		minetest.forceload_free_block (robot_pos, false)
 	end
@@ -154,6 +156,8 @@ function utils.robot_move (robot_pos, side)
 	meta:set_string ("program", minetest.serialize (program))
 	meta:set_string ("formspec", formspec)
 
+	inv:set_size("value", 1)
+	inv:set_width("value", 1)
 	inv:set_size("program", utils.program_inv_size)
 	inv:set_width("program", 10)
 	inv:set_size("commands", utils.commands_inv_size)
@@ -167,6 +171,8 @@ function utils.robot_move (robot_pos, side)
 	for s = 1, slots do
 		inv:set_stack ("storage", s, storage[s])
 	end
+
+	inv:set_stack ("value", 1, value_slot)
 
 	if persists == 1 then
 		minetest.forceload_block (pos, false)

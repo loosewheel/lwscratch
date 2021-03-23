@@ -48,6 +48,28 @@ local function on_receive_fields (pos, formname, fields, sender)
 			end
 		end
 
+	elseif fields.set_number then
+		local meta = minetest.get_meta (pos)
+
+		if meta then
+			local value = tonumber (fields.number_value or 0) or 0
+			local inv = meta:get_inventory ()
+
+			if inv then
+				local stack = inv:get_stack ("value", 1)
+
+				if stack and utils.is_number_item (stack:get_name ()) then
+					local imeta = stack:get_meta ()
+
+					if imeta then
+						imeta:set_int ("value", value)
+						imeta:set_int ("description", value)
+						inv:set_stack ("value", 1, stack)
+					end
+				end
+			end
+		end
+
 	elseif fields.persists then
 		local meta = minetest.get_meta (pos)
 
@@ -93,34 +115,6 @@ local function on_receive_fields (pos, formname, fields, sender)
 					end
 
 					inv:set_stack ("program", s, nil)
-				end
-			end
-		end
-
-	elseif fields.number_value then
-		if fields.key_enter_field == "number_value" or fields.set_number then
-			local meta = minetest.get_meta (pos)
-			if meta then
-				local index = meta:get_int ("number_index")
-
-				if index > 0 then
-					local value = tonumber (fields.number_value or 0) or 0
-					local inv = meta:get_inventory ()
-
-					if inv then
-						local stack = inv:get_stack ("program", index)
-
-						if stack and utils.is_number_item (stack:get_name ()) then
-							local imeta = stack:get_meta ()
-
-							if imeta then
-								imeta:set_int ("value", value)
-								imeta:set_int ("description", value)
-								meta:set_int ("number_value", value)
-								inv:set_stack ("program", index, stack)
-							end
-						end
-					end
 				end
 			end
 		end
@@ -201,12 +195,13 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 		meta:set_int ("persists", persists)
 		meta:set_int ("running", 0)
 		meta:set_int ("delay_counter", 0)
-		meta:set_int ("number_index", 0)
 
 		meta:set_string ("formspec", utils.get_robot_formspec (pos))
 
 		local inv = meta:get_inventory ()
 
+		inv:set_size("value", 1)
+		inv:set_width("value", 1)
 		inv:set_size("program", utils.program_inv_size)
 		inv:set_width("program", 9)
 		inv:set_size("commands", utils.commands_inv_size)
@@ -329,7 +324,31 @@ local function allow_metadata_inventory_move (pos, from_list, from_index, to_lis
 		return 0
 	end
 
+	if to_list == "value" then
+		local meta = minetest.get_meta (pos)
+
+		if meta then
+			local inv = meta:get_inventory ()
+
+			if inv then
+				local stack = inv:get_stack (from_list, from_index)
+
+				if stack and utils.is_number_item (stack:get_name ()) then
+					return 1
+				end
+			end
+		end
+
+		return 0
+	end
+
+
 	if from_list == "program" then
+		if to_list == "commands" or to_list == "program" then
+			return 1
+		end
+
+	elseif from_list == "value" then
 		if to_list == "commands" or to_list == "program" then
 			return 1
 		end
@@ -485,12 +504,9 @@ local function allow_metadata_inventory_take (pos, listname, index, stack, playe
 		return 0
 	end
 
-	if stack and not stack:is_empty () then
-		if listname == "program" or listname == "commands" or
-			utils.is_command_item (stack:get_name ()) then
+	if listname == "program" or listname == "commands" then
 
-			return 0
-		end
+		return 0
 	end
 
 	return utils.settings.default_stack_max
@@ -499,77 +515,16 @@ end
 
 
 local function on_metadata_inventory_put (pos, listname, index, stack, player)
-	if listname == "commands" then
-		local meta = minetest.get_meta (pos)
-
-		if meta then
-			local inv = meta:get_inventory ()
-
-			if inv then
-				utils.prep_inventory (inv, nil)
-			end
-
-			if meta:get_int ("number_index") > 0 then
-				meta:set_int ("number_index", 0)
-				meta:set_string ("formspec", utils.get_robot_formspec (pos))
-			end
-		end
-	end
 end
 
 
 
 local function on_metadata_inventory_take (pos, listname, index, stack, player)
-	if listname == "commands" then
-		local meta minetest.get_meta (pos)
-
-		if meta then
-			local inv = meta:get_inventory ()
-
-			if inv then
-				inv:set_stack ("commands", index, stack)
-			end
-
-			if meta:get_int ("number_index") > 0 then
-				meta:set_int ("number_index", 0)
-				meta:set_string ("formspec", utils.get_robot_formspec (pos))
-			end
-		end
-
-	end
 end
 
 
 
 local function on_metadata_inventory_move (pos, from_list, from_index, to_list, to_index, count, player)
-	local number_set = false
-
-	if to_list == "program" then
-		local meta = minetest.get_meta (pos)
-
-		if meta then
-			local inv = meta:get_inventory ()
-
-			if inv then
-				local stack = inv:get_stack ("program", to_index)
-
-				if stack and utils.is_number_item (stack:get_name ()) then
-					local imeta = stack:get_meta ()
-
-					if imeta then
-						local value = imeta:get_int ("value")
-
-						meta:set_int ("number_index", to_index)
-						meta:set_int ("number_value", value)
-						meta:set_string ("formspec", utils.get_robot_formspec (pos))
-
-						number_set = true
-					end
-				end
-			end
-		end
-	end
-
 	if (from_list == "program" and to_list == "commands") or
 		(from_list == "commands" and to_list == "program") then
 
@@ -581,15 +536,6 @@ local function on_metadata_inventory_move (pos, from_list, from_index, to_list, 
 			if inv then
 				utils.prep_inventory (inv, nil)
 			end
-		end
-	end
-
-	if not number_set then
-		local meta = minetest.get_meta (pos)
-
-		if meta then
-			meta:set_int ("number_index", 0)
-			meta:set_string ("formspec", utils.get_robot_formspec (pos))
 		end
 	end
 end

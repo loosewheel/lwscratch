@@ -112,6 +112,7 @@ local function check_condition (program, last_condition)
 				cmd = program:next_cell (false)
 			end
 
+
 			return true
 		end
 
@@ -1066,8 +1067,6 @@ function program_obj:check ()
 	self:init ()
 
 	for l = 1, self:lines () do
-		self:next_line ()
-
 		local indent = self:line_indent ()
 
 		if indent then
@@ -1087,6 +1086,8 @@ function program_obj:check ()
 				end
 			end
 		end
+
+		self:next_line ()
 	end
 
 	self:init ()
