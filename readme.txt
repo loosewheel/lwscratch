@@ -61,7 +61,7 @@ Each robot can be given a name, by entering the name in the Name field and
 clicking the Set button. The name will display when the robot is pointed
 at or as the tool tip if it is in an inventory.
 
-Each robot has a storage area (center left).
+Each robot has a storage area (center right).
 
 While a robot is running sneak + punch will open a form to stop it.
 
