@@ -293,6 +293,56 @@ minetest.register_craftitem ("lwscratch:cmd_act_wait", {
 
 
 
+minetest.register_craftitem ("lwscratch:cmd_act_value_assign", {
+	description = S("Variable assign"),
+	short_description = S("Variable assign"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "act_value_assign.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_value_plus", {
+	description = S("Variable plus"),
+	short_description = S("Variable plus"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "act_value_plus.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_value_minus", {
+	description = S("Variable minus"),
+	short_description = S("Variable minus"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "act_value_minus.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_value_multiply", {
+	description = S("Variable multiply by"),
+	short_description = S("Variable multiply by"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "act_value_multiply.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_value_divide", {
+	description = S("Variable divide by"),
+	short_description = S("Variable divide by"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "act_value_divide.png",
+	stack_max = 1
+})
+
+
+
 minetest.register_craftitem ("lwscratch:cmd_cond_contains", {
 	description = S("Contains item"),
 	short_description = S("Contains item"),
@@ -328,6 +378,76 @@ minetest.register_craftitem ("lwscratch:cmd_cond_counter_less", {
 	short_description = S("Counter less than"),
 	groups = { not_in_creative = 1 },
 	inventory_image = "cond_counter_less.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_counter_even", {
+	description = S("Counter is even"),
+	short_description = S("Counter is even"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_counter_even.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_counter_odd", {
+	description = S("Counter is odd"),
+	short_description = S("Counter is odd"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_counter_odd.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_value_equal", {
+	description = S("Variable equal to"),
+	short_description = S("Variable equal to"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_value_equal.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_value_greater", {
+	description = S("Variable greater than"),
+	short_description = S("Variable greater than"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_value_greater.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_value_less", {
+	description = S("Variable less than"),
+	short_description = S("Variable less than"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_value_less.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_value_even", {
+	description = S("Variable is even"),
+	short_description = S("Variable is even"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_value_even.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_cond_value_odd", {
+	description = S("Variable is odd"),
+	short_description = S("Variable is odd"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "cond_value_odd.png",
 	stack_max = 1
 })
 
@@ -423,11 +543,111 @@ minetest.register_craftitem ("lwscratch:cmd_cond_fits", {
 
 
 
-minetest.register_craftitem ("lwscratch:cmd_number", {
+minetest.register_craftitem ("lwscratch:cmd_value_number", {
 	description = S("Number"),
 	short_description = S("Number"),
 	groups = { not_in_creative = 1 },
-	inventory_image = "number.png",
+	inventory_image = "value_number.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_value_text", {
+	description = S("Text"),
+	short_description = S("Text"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "value_text.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_value_value", {
+	description = S("Variable"),
+	short_description = S("Variable"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "value_value.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_front", {
+	description = S("Name front"),
+	short_description = S("Name front"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_front.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_front_down", {
+	description = S("Name front down"),
+	short_description = S("Name front down"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_front_down.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_front_up", {
+	description = S("Name front up"),
+	short_description = S("Name front up"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_front_up.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_back", {
+	description = S("Name back"),
+	short_description = S("Name back"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_back.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_back_down", {
+	description = S("Name back down"),
+	short_description = S("Name back down"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_back_down.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_back_up", {
+	description = S("Name back up"),
+	short_description = S("Name back up"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_back_up.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_down", {
+	description = S("Name down"),
+	short_description = S("Name down"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_down.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_name_up", {
+	description = S("Name up"),
+	short_description = S("Name up"),
+	groups = { not_in_creative = 1 },
+	inventory_image = "name_up.png",
 	stack_max = 1
 })
 

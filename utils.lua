@@ -138,11 +138,14 @@ function utils.get_program (inv)
 			if stack then
 				cmd.command = stack:get_name ()
 
-				if utils.is_number_item (stack:get_name ()) then
+				if utils.is_value_item (stack:get_name ()) or
+					utils.is_action_value_item (stack:get_name ()) or
+					utils.is_condition_value_item (stack:get_name ()) then
+
 					local meta = stack:get_meta ()
 
 					if meta then
-						cmd.value = meta:get_int ("value")
+						cmd.value = meta:get_string ("value")
 					else
 						minetest.log ("error", "lwscratch - unable to get number value.")
 					end
@@ -160,9 +163,9 @@ end
 function utils.prep_inventory (inv, program)
 	local ops =
 	{
+		"lwscratch:cmd_act_move_front",
 		"lwscratch:cmd_act_move_back",
 		"lwscratch:cmd_act_move_down",
-		"lwscratch:cmd_act_move_front",
 		"lwscratch:cmd_act_move_up",
 		"lwscratch:cmd_act_turn_left",
 		"lwscratch:cmd_act_turn_right",
@@ -196,6 +199,15 @@ function utils.prep_inventory (inv, program)
 		"",
 		"",
 
+		"lwscratch:cmd_act_value_assign",
+		"lwscratch:cmd_act_value_plus",
+		"lwscratch:cmd_act_value_minus",
+		"lwscratch:cmd_act_value_multiply",
+		"lwscratch:cmd_act_value_divide",
+		"",
+		"",
+		"",
+
 		"lwscratch:cmd_act_stop",
 		"lwscratch:cmd_act_wait",
 		"",
@@ -205,20 +217,47 @@ function utils.prep_inventory (inv, program)
 		"",
 		"",
 
+		"lwscratch:cmd_value_number",
+		"lwscratch:cmd_value_text",
+		"lwscratch:cmd_value_value",
+		"",
+		"",
+		"",
+		"",
+		"",
+
+		"lwscratch:cmd_name_front",
+		"lwscratch:cmd_name_front_down",
+		"lwscratch:cmd_name_front_up",
+		"lwscratch:cmd_name_back",
+		"lwscratch:cmd_name_back_down",
+		"lwscratch:cmd_name_back_up",
+		"lwscratch:cmd_name_down",
+		"lwscratch:cmd_name_up",
+
 		"lwscratch:cmd_stat_if",
 		"lwscratch:cmd_stat_loop",
 		"lwscratch:cmd_op_not",
 		"lwscratch:cmd_op_and",
 		"lwscratch:cmd_op_or",
-		"lwscratch:cmd_number",
+		"",
 		"",
 		"",
 
 		"lwscratch:cmd_cond_counter_equal",
 		"lwscratch:cmd_cond_counter_greater",
 		"lwscratch:cmd_cond_counter_less",
+		"lwscratch:cmd_cond_counter_even",
+		"lwscratch:cmd_cond_counter_odd",
 		"",
 		"",
+		"",
+
+		"lwscratch:cmd_cond_value_equal",
+		"lwscratch:cmd_cond_value_greater",
+		"lwscratch:cmd_cond_value_less",
+		"lwscratch:cmd_cond_value_even",
+		"lwscratch:cmd_cond_value_odd",
 		"",
 		"",
 		"",
@@ -265,12 +304,15 @@ function utils.prep_inventory (inv, program)
 					local stack = ItemStack (line[c].command)
 
 					if stack then
-						if utils.is_number_item (stack:get_name ()) then
+						if utils.is_value_item (stack:get_name ()) or
+							utils.is_action_value_item (stack:get_name ()) or
+							utils.is_condition_value_item (stack:get_name ()) then
+
 							local meta = stack:get_meta ()
 
 							if meta then
-								meta:set_int ("value", line[c].value or 0)
-								meta:set_int ("description", line[c].value or 0)
+								meta:set_string ("value", tostring (line[c].value or ""))
+								meta:set_string ("description", tostring (line[c].value or ""))
 							else
 								minetest.log ("error", "lwscratch - unable to set number value.")
 							end
@@ -292,6 +334,18 @@ end
 
 function utils.is_command_item (name)
 	return name:sub (1, 14) == "lwscratch:cmd_"
+end
+
+
+
+function utils.is_inventory_item (name)
+	return name:len () > 0 and name:sub (1, 14) ~= "lwscratch:cmd_"
+end
+
+
+
+function utils.is_inventory_item_or_blank (name)
+	return name:sub (1, 14) ~= "lwscratch:cmd_"
 end
 
 
@@ -320,8 +374,44 @@ end
 
 
 
+function utils.is_value_item (name)
+	return name:sub (1, 20) == "lwscratch:cmd_value_"
+end
+
+
+
 function utils.is_number_item (name)
-	return name == "lwscratch:cmd_number"
+	return name == "lwscratch:cmd_value_number"
+end
+
+
+
+function utils.is_text_item (name)
+	return name == "lwscratch:cmd_value_text"
+end
+
+
+
+function utils.is_variable_item (name)
+	return name == "lwscratch:cmd_value_value"
+end
+
+
+
+function utils.is_action_value_item (name)
+	return name:sub (1, 24) == "lwscratch:cmd_act_value_"
+end
+
+
+
+function utils.is_condition_value_item (name)
+	return name:sub (1, 25) == "lwscratch:cmd_cond_value_"
+end
+
+
+
+function utils.is_name_item (name)
+	return name:sub (1, 19) == "lwscratch:cmd_name_"
 end
 
 
@@ -479,15 +569,15 @@ function utils.get_robot_formspec (pos)
 		"no_prepend[]"..
 		"bgcolor[#769BE6]"..
 
-		"field[1.0,1.0;2.5,0.8;name;Name;${name}]"..
+		"field[1.0,1.0;2.5,0.8;name;Robot;${name}]"..
 		"button[3.5,1.0;1.0,0.8;setname;Set]"..
-		"button[5.3,1.0;1.4,0.8;clear_program;Clear]"..
+		"button[4.6,1.0;1.4,0.8;clear_program;Clear]"..
 
 		"style_type[list;noclip=false;size=1.0,1.0;spacing=0.0,0.0]"..
 		-- value
-		"list[context;value;7.4,0.9;1,1;]\n"..
-		"field[8.5,1.0;2.0,0.8;number_value;Value;]"..
-		"button[10.5,1.0;1.0,0.8;set_number;Set]"..
+		"list[context;value;6.1,0.9;1,1;]\n"..
+		"field[7.2,1.0;3.3,0.8;number_value;Value;]"..
+		"button[10.5,1.0;1.0,0.8;set_value;Set]"..
 
 		-- program
 		"scrollbaroptions[min=0;max=350;smallstep=30;largestep=70;thumbsize=105;arrows=default]"..
@@ -497,10 +587,10 @@ function utils.get_robot_formspec (pos)
 		"scroll_container_end[]"..
 
 		-- commands
-		"scrollbaroptions[min=0;max=50;smallstep=10;largestep=10;thumbsize=25;arrows=default]"..
-		"scrollbar[20.0,1.0;0.5,5.0;vertical;commands_scroll;0-50]"..
+		"scrollbaroptions[min=0;max=90;smallstep=10;largestep=10;thumbsize=25;arrows=default]"..
+		"scrollbar[20.0,1.0;0.5,5.0;vertical;commands_scroll;0-90]"..
 		"scroll_container[12.0,1.0;8.0,5.0;commands_scroll;vertical;0.1]"..
-		"list[context;commands;0.0,0.0;8,10;]\n"..
+		"list[context;commands;0.0,0.0;8,14;]\n"..
 		"scroll_container_end[]"..
 
 		power..

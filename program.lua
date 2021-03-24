@@ -19,11 +19,17 @@ end
 local function check_condition_detect (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
 		return true
 	end
 
-	return false, "item or blank must follow detect"
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow detect"
 end
 
 
@@ -31,11 +37,17 @@ end
 local function check_condition_fits (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
 		return true
 	end
 
-	return false, "item or blank must follow item fits"
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow item fits"
 end
 
 
@@ -43,11 +55,17 @@ end
 local function check_condition_contains (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
 		return true
 	end
 
-	return false, "item or blank must follow contains item"
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow contains item"
 end
 
 
@@ -55,17 +73,97 @@ end
 local function check_condition_counter (program)
 	local cmd = program:next_cell (false)
 
-	if utils.is_number_item (cmdstr (cmd)) then
+	if utils.is_number_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
 		return true
 	end
 
-	return false, "number must follow counter"
+	return false, "number or variable must follow counter"
+end
+
+
+
+local function check_condition_counter_even (program)
+	return true
+end
+
+
+
+local function check_condition_counter_odd (program)
+	return true
+end
+
+
+
+local function check_condition_variable (program)
+	local cmd = program:next_cell (false)
+
+	if cmd.command == "lwscratch:cmd_cond_value_less" then
+		if utils.is_number_item (cmdstr (cmd)) or
+			utils.is_variable_item (cmdstr (cmd)) then
+
+			return true
+		end
+
+		return false, "number or variable must follow variable less"
+
+	elseif cmd.command == "lwscratch:cmd_cond_value_greater" then
+		if utils.is_number_item (cmdstr (cmd)) or
+			utils.is_variable_item (cmdstr (cmd)) then
+
+			return true
+		end
+
+		return false, "number or variable must follow variable greater"
+
+	else -- assume lwscratch:cmd_cond_value_equal
+		if utils.is_value_item (cmdstr (cmd)) or
+			utils.is_name_item (cmdstr (cmd)) or
+			utils.is_inventory_item (cmdstr (cmd)) then
+
+			return true
+		end
+
+		return false, "name, number, text, variable or item must follow variable equals"
+
+	end
+end
+
+
+
+
+local function check_condition_variable_even (program)
+	return true
+end
+
+
+
+local function check_condition_variable_odd (program)
+	return true
 end
 
 
 
 local function check_condition_number (program)
 	return false, "out of place number"
+end
+
+
+
+local function check_condition_text (program)
+	return false, "out of place text"
+end
+
+
+
+local function check_condition_variable_value (program)
+	return false, "out of place variable"
+end
+
+
+
+local function check_condition_name (program)
+	return false, "out of place name"
 end
 
 
@@ -85,7 +183,24 @@ local check_condition_table =
 	["lwscratch:cmd_cond_counter_equal"] = check_condition_counter,
 	["lwscratch:cmd_cond_counter_greater"] = check_condition_counter,
 	["lwscratch:cmd_cond_counter_less"] = check_condition_counter,
-	["lwscratch:cmd_number"] = check_condition_number,
+	["lwscratch:cmd_cond_counter_even"] = check_condition_counter_even,
+	["lwscratch:cmd_cond_counter_odd"] = check_condition_counter_odd,
+	["lwscratch:cmd_cond_value_equal"] = check_condition_variable,
+	["lwscratch:cmd_cond_value_greater"] = check_condition_variable,
+	["lwscratch:cmd_cond_value_less"] = check_condition_variable,
+	["lwscratch:cmd_cond_value_even"] = check_condition_variable_even,
+	["lwscratch:cmd_cond_value_odd"] = check_condition_variable_odd,
+	["lwscratch:cmd_value_number"] = check_condition_number,
+	["lwscratch:cmd_value_text"] = check_condition_text,
+	["lwscratch:cmd_value_variable"] = check_condition_variable_value,
+	["lwscratch:cmd_name_front"] = check_condition_name,
+	["lwscratch:cmd_name_front_down"] = check_condition_name,
+	["lwscratch:cmd_name_front_up"] = check_condition_name,
+	["lwscratch:cmd_name_back"] = check_condition_name,
+	["lwscratch:cmd_name_back_down"] = check_condition_name,
+	["lwscratch:cmd_name_back_up"] = check_condition_name,
+	["lwscratch:cmd_name_down"] = check_condition_name,
+	["lwscratch:cmd_name_up"] = check_condition_name,
 }
 
 
@@ -175,11 +290,17 @@ end
 local function check_pull (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
 		return true
 	end
 
-	return false, "item or blank must follow pull"
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow pull"
 end
 
 
@@ -187,12 +308,18 @@ end
 local function check_put (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
 
 		return true
 	end
 
-	return false, "item or blank must follow put"
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow put"
 end
 
 
@@ -200,12 +327,18 @@ end
 local function check_drop (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
 
 		return true
 	end
 
-	return false, "item or blank must follow drop"
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow drop"
 end
 
 
@@ -213,12 +346,18 @@ end
 local function check_trash (program)
 	local cmd = program:next_cell (false)
 
-	if not utils.is_command_item (cmdstr (cmd)) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
 
 		return true
 	end
 
-	return false, "item or blank must follow trash"
+	if utils.is_inventory_item_or_blank (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, blank, variable or text must follow trash"
 end
 
 
@@ -226,11 +365,17 @@ end
 local function check_place (program)
 	local cmd = program:next_cell (false)
 
-	if cmdstr (cmd):len () > 0 and not utils.is_command_item (cmd.command) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
 		return true
 	end
 
-	return false, "item must follow place"
+	if utils.is_inventory_item (cmd.command) then
+		return true
+	end
+
+	return false, "item, variable or text must follow place"
 end
 
 
@@ -238,11 +383,17 @@ end
 local function check_craft (program)
 	local cmd = program:next_cell (false)
 
-	if cmdstr (cmd):len () > 0 and not utils.is_command_item (cmd.command) then
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
 		return true
 	end
 
-	return false, "item must follow craft"
+	if utils.is_inventory_item (cmdstr (cmd)) then
+		return true
+	end
+
+	return false, "item, variable or text must follow craft"
 end
 
 
@@ -277,6 +428,24 @@ end
 
 
 
+local function check_text (program)
+	return false, "out of place text"
+end
+
+
+
+local function check_variable (program)
+	return false, "out of place variable"
+end
+
+
+
+local function check_name (program)
+	return false, "out of place name"
+end
+
+
+
 local function check_or (program)
 	return false, "out of place or"
 end
@@ -304,11 +473,56 @@ end
 local function check_wait (program)
 	local cmd = program:next_cell (false)
 
-	if utils.is_number_item (cmdstr (cmd)) then
+	if utils.is_number_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
 		return true
 	end
 
-	return false, "number must follow wait"
+	return false, "number or variable must follow wait"
+end
+
+
+
+local function check_action_value_assign (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_value_item (cmdstr (cmd)) or
+		utils.is_name_item (cmdstr (cmd)) or
+		utils.is_inventory_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "name, number, text, variable or item must follow variable action assign"
+end
+
+
+
+local function check_action_value_plus (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_value_item (cmdstr (cmd)) or
+		utils.is_name_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "name, number, text or variable must follow variable action plus"
+end
+
+
+
+local function check_action_value_no_text (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_value_item (cmdstr (cmd)) and
+		not utils.is_text_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "number or variable must follow variable action"
 end
 
 
@@ -354,9 +568,24 @@ local check_table =
 	["lwscratch:cmd_act_place_down"] = check_place,
 	["lwscratch:cmd_act_place_up"] = check_place,
 	["lwscratch:cmd_act_craft"] = check_craft,
-	["lwscratch:cmd_number"] = check_number,
+	["lwscratch:cmd_value_number"] = check_number,
+	["lwscratch:cmd_value_text"] = check_text,
+	["lwscratch:cmd_value_variable"] = check_variable,
+	["lwscratch:cmd_name_front"] = check_name,
+	["lwscratch:cmd_name_front_down"] = check_name,
+	["lwscratch:cmd_name_front_up"] = check_name,
+	["lwscratch:cmd_name_back"] = check_name,
+	["lwscratch:cmd_name_back_down"] = check_name,
+	["lwscratch:cmd_name_back_up"] = check_name,
+	["lwscratch:cmd_name_down"] = check_name,
+	["lwscratch:cmd_name_up"] = check_name,
 	["lwscratch:cmd_act_stop"] = check_stop,
 	["lwscratch:cmd_act_wait"] = check_wait,
+	["lwscratch:cmd_act_value_assign"] = check_action_value_assign,
+	["lwscratch:cmd_act_value_plus"] = check_action_value_plus,
+	["lwscratch:cmd_act_value_minus"] = check_action_value_no_text,
+	["lwscratch:cmd_act_value_multiply"] = check_action_value_no_text,
+	["lwscratch:cmd_act_value_divide"] = check_action_value_no_text,
 	["lwscratch:cmd_stat_if"] = check_if,
 	["lwscratch:cmd_stat_loop"] = check_loop,
 	["lwscratch:cmd_op_or"] = check_or,
@@ -392,49 +621,138 @@ local function run_condition_detect (program, robot_pos)
 		side = "front up"
 	end
 
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = program:get_value (item)
+	else
+		item = item.command
+	end
+
 	local node = utils.robot_detect (robot_pos, side)
 
-	if not item or not item.command then
+	if not item then
 		return node ~= nil
 	end
 
-	return node == item.command
+	return node == item
 end
 
 
 
 local function run_condition_fits (program, robot_pos)
-	local cmd = program:cur_command ()
 	local item = program:next_cell ()
 
-	return utils.robot_room_for (robot_pos, (item and item.command) or nil)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = program:get_value (item)
+	else
+		item = item.command
+	end
+
+	return utils.robot_room_for (robot_pos, item)
 end
 
 
 
 local function run_condition_contains (program, robot_pos)
-	local cmd = program:cur_command ()
 	local item = program:next_cell ()
 
-	return utils.robot_contains (robot_pos, (item and item.command) or nil)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = program:get_value (item)
+	else
+		item = item.command
+	end
+
+	return utils.robot_contains (robot_pos, item)
 end
 
 
 
 local function run_condition_counter (program, robot_pos)
 	local cmd = program:cur_command ()
-	local value = program:next_cell ()
+	local value = tonumber (program:get_value (program:next_cell ()) or 0) or 0
 
 	if cmd.command == "lwscratch:cmd_cond_counter_less" then
-		return program:loop_counter () < value.value
+		return program:loop_counter () < value
 
 	elseif cmd.command == "lwscratch:cmd_cond_counter_greater" then
-		return program:loop_counter () > value.value
+		return program:loop_counter () > value
 
 	else -- assume lwscratch:cmd_cond_counter_equal
-		return program:loop_counter () == value.value
+		return program:loop_counter () == value
 
 	end
+end
+
+
+
+local function run_condition_counter_even (program, robot_pos)
+	return (program:loop_counter () % 2) == 0
+end
+
+
+
+local function run_condition_counter_odd (program, robot_pos)
+	return (program:loop_counter () % 2) == 1
+end
+
+
+
+local function run_condition_variable (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell ()
+	local var = program:get_value (cmd)
+	local val = ""
+
+	if utils.is_inventory_item (cmdstr (value)) then
+		val = value.command
+	else
+		val = program:get_value (value)
+	end
+
+	if cmd.command == "lwscratch:cmd_cond_value_less" then
+		val = tonumber (val or 0) or 0
+		var = tonumber (var or 0) or 0
+
+		return var < val
+
+	elseif cmd.command == "lwscratch:cmd_cond_value_greater" then
+		val = tonumber (val or 0) or 0
+		var = tonumber (var or 0) or 0
+
+		return var > val
+
+	else -- assume lwscratch:cmd_cond_value_equal
+		if utils.is_number_item (value) then
+			val = tonumber (val or 0) or 0
+			var = tonumber (var or 0) or 0
+
+			return var == value
+		end
+
+		return var == val
+
+	end
+end
+
+
+
+local function run_condition_variable_even (program, robot_pos)
+	local var = tonumber (program:get_value (program:cur_command ()) or 0) or 0
+
+	return (var % 2) == 0
+end
+
+
+
+local function run_condition_variable_odd (program, robot_pos)
+	local var = tonumber (program:get_value (program:cur_command ()) or 0) or 0
+
+	return (var () % 2) == 1
 end
 
 
@@ -454,6 +772,13 @@ local run_condition_table =
 	["lwscratch:cmd_cond_counter_equal"] = run_condition_counter,
 	["lwscratch:cmd_cond_counter_greater"] = run_condition_counter,
 	["lwscratch:cmd_cond_counter_less"] = run_condition_counter,
+	["lwscratch:cmd_cond_counter_even"] = run_condition_counter_even,
+	["lwscratch:cmd_cond_counter_odd"] = run_condition_counter_odd,
+	["lwscratch:cmd_cond_value_equal"] = run_condition_variable,
+	["lwscratch:cmd_cond_value_greater"] = run_condition_variable,
+	["lwscratch:cmd_cond_value_less"] = run_condition_variable,
+	["lwscratch:cmd_cond_value_even"] = run_condition_variable_even,
+	["lwscratch:cmd_cond_value_odd"] = run_condition_variable_odd,
 }
 
 
@@ -504,6 +829,30 @@ local function run_condition (program, robot_pos)
 			and_next = false
 		end
 	end
+end
+
+
+
+local function get_node_name (command, robot_pos)
+	local side = "front" -- assume lwscratch:cmd_name_front
+
+	if command == "lwscratch:cmd_name_back" then
+		side = "back"
+	elseif command == "lwscratch:cmd_name_back_down" then
+		side = "back down"
+	elseif command == "lwscratch:cmd_name_back_up" then
+		side = "back up"
+	elseif command == "lwscratch:cmd_name_down" then
+		side = "down"
+	elseif command == "lwscratch:cmd_name_up" then
+		side = "up"
+	elseif command == "lwscratch:cmd_name_front_down" then
+		side = "front down"
+	elseif command == "lwscratch:cmd_name_front_up" then
+		side = "front up"
+	end
+
+	return utils.robot_detect (robot_pos, side) or ""
 end
 
 
@@ -576,9 +925,17 @@ end
 
 
 local function run_pull (program, robot_pos)
-	local item = cmdstr (program:next_cell ())
+	local item = program:next_cell ()
 
-	utils.robot_pull (robot_pos, "front", (item:len () > 0 and item) or nil)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_pull (robot_pos, "front", item)
 
 	return true
 end
@@ -586,9 +943,17 @@ end
 
 
 local function run_put (program, robot_pos)
-	local item = cmdstr (program:next_cell ())
+	local item = program:next_cell ()
 
-	utils.robot_put (robot_pos, "front", (item:len () > 0 and item) or nil)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_put (robot_pos, "front", item)
 
 	return true
 end
@@ -596,9 +961,17 @@ end
 
 
 local function run_drop (program, robot_pos)
-	local item = cmdstr (program:next_cell ())
+	local item = program:next_cell ()
 
-	utils.robot_remove_item (robot_pos, (item:len () > 0 and item) or nil, true)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_remove_item (robot_pos, item, true)
 
 	return true
 end
@@ -606,9 +979,17 @@ end
 
 
 local function run_trash (program, robot_pos)
-	local item = cmdstr (program:next_cell ())
+	local item = program:next_cell ()
 
-	utils.robot_remove_item (robot_pos, (item:len () > 0 and item) or nil, false)
+	if cmdstr (item) == "" then
+		item = nil
+	elseif utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_remove_item (robot_pos, item, false)
 
 	return true
 end
@@ -636,7 +1017,13 @@ local function run_place (program, robot_pos)
 		side = "front up"
 	end
 
-	utils.robot_place (robot_pos, side, item.command)
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else
+		item = item.command
+	end
+
+	utils.robot_place (robot_pos, side, item)
 
 	return true
 end
@@ -646,7 +1033,13 @@ end
 local function run_craft (program, robot_pos)
 	local item = program:next_cell ()
 
-	utils.robot_craft (robot_pos, item.command)
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else
+		item = item.command
+	end
+
+	utils.robot_craft (robot_pos, item)
 
 	return true
 end
@@ -662,15 +1055,134 @@ end
 
 
 local function run_wait (program, robot_pos)
-	local value = program:next_cell ()
+	local value = tonumber (program:get_value (program:next_cell ()) or 0) or 0
 	local meta = minetest.get_meta (robot_pos)
 
 	if meta then
 		meta:set_int ("delay_counter",
-			math.ceil ((value.value / 10) / utils.settings.running_tick))
+			math.ceil ((value / 10) / utils.settings.running_tick))
 	end
 
 	return true
+end
+
+
+
+local function run_action_value_assign (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell (false)
+	local val = ""
+	local name = cmd.value
+
+	if name and name:len () > 0 then
+		if utils.is_inventory_item (cmdstr (value)) then
+			val = value.command
+		elseif utils.is_name_item (cmdstr (value)) then
+			val = get_node_name (value.command, robot_pos)
+		else
+			val = program:get_value (value)
+		end
+
+		program:set_variable (name, val)
+	end
+
+	return false
+end
+
+
+
+local function run_action_value_plus (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell (false)
+	local name = cmd.value
+
+	if name and name:len () > 0 then
+		local val = ""
+		local var = program:get_variable (name)
+
+		if utils.is_name_item (cmdstr (value)) then
+			val = get_node_name (value.command, robot_pos)
+		else
+			val = program:get_value (value)
+		end
+
+		if type (var) == "text" or type (val) == "text" then
+			program:set_variable (name, tostring (var)..tostring (val))
+		else
+			program:set_variable (name, (tonumber (var or 0) or 0) + (tonumber (val or 0) or 0))
+		end
+	end
+
+	return false
+end
+
+
+
+local function run_action_value_minus (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell (false)
+	local name = cmd.value
+
+	if name and name:len () > 0 then
+		local val = ""
+		local var = program:get_variable (name)
+
+		if utils.is_name_item (cmdstr (value)) then
+			val = get_node_name (value.command, robot_pos)
+		else
+			val = program:get_value (value)
+		end
+
+		program:set_variable (name, (tonumber (var or 0) or 0) - (tonumber (val or 0) or 0))
+	end
+
+	return false
+end
+
+
+
+local function run_action_value_multiply (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell (false)
+	local name = cmd.value
+
+	if name and name:len () > 0 then
+		local val = ""
+		local var = program:get_variable (name)
+
+		if utils.is_name_item (cmdstr (value)) then
+			val = get_node_name (value.command, robot_pos)
+		else
+			val = program:get_value (value)
+		end
+
+		program:set_variable (name, (tonumber (var or 0) or 0) * (tonumber (val or 0) or 0))
+	end
+
+	return false
+end
+
+
+
+local function run_action_value_divide (program, robot_pos)
+	local cmd = program:cur_command ()
+	local value = program:next_cell (false)
+	local name = cmd.value
+
+	if name and name:len () > 0 then
+		local val = ""
+		local var = program:get_variable (name)
+
+		if utils.is_name_item (cmdstr (value)) then
+			val = get_node_name (value.command, robot_pos)
+		else
+			val = program:get_value (value)
+		end
+
+		program:set_variable (name, (tonumber (var or 0) or 0) / (tonumber (val or 0) or 0))
+	end
+
+	return false
 end
 
 
@@ -737,6 +1249,11 @@ local run_table =
 	["lwscratch:cmd_act_craft"] = run_craft,
 	["lwscratch:cmd_act_stop"] = run_stop,
 	["lwscratch:cmd_act_wait"] = run_wait,
+	["lwscratch:cmd_act_value_assign"] = run_action_value_assign,
+	["lwscratch:cmd_act_value_plus"] = run_action_value_plus,
+	["lwscratch:cmd_act_value_minus"] = run_action_value_minus,
+	["lwscratch:cmd_act_value_multiply"] = run_action_value_multiply,
+	["lwscratch:cmd_act_value_divide"] = run_action_value_divide,
 	["lwscratch:cmd_stat_if"] = run_if,
 	["lwscratch:cmd_stat_loop"] = run_loop,
 
@@ -1027,6 +1544,57 @@ function program_obj:loop_counter ()
 	end
 
 	return 0
+end
+
+
+
+function program_obj:get_variable (name)
+	if not self.program then
+		return 0
+	end
+
+	if self.program.variables then
+		return self.program.variables[name]
+	end
+
+	return nil
+end
+
+
+
+function program_obj:set_variable (name, value)
+	if not self.program then
+		return 0
+	end
+
+	if not self.program.variables then
+		self.program.variables = { }
+	end
+
+	self.program.variables[name] = value
+end
+
+
+
+function program_obj:get_value (cmd)
+	if utils.is_number_item (cmdstr (cmd)) then
+
+		return tonumber (cmd.value or 0) or 0
+	end
+
+	if utils.is_text_item (cmdstr (cmd)) then
+
+		return cmd.value
+	end
+
+	if utils.is_variable_item (cmdstr (cmd)) or
+		utils.is_action_value_item (cmdstr (cmd)) or
+		utils.is_condition_value_item (cmdstr (cmd)) then
+
+		return self:get_variable (cmd.value)
+	end
+
+	return nil
 end
 
 

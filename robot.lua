@@ -48,23 +48,27 @@ local function on_receive_fields (pos, formname, fields, sender)
 			end
 		end
 
-	elseif fields.set_number then
+	elseif fields.set_value then
 		local meta = minetest.get_meta (pos)
 
 		if meta then
-			local value = tonumber (fields.number_value or 0) or 0
 			local inv = meta:get_inventory ()
 
 			if inv then
 				local stack = inv:get_stack ("value", 1)
 
-				if stack and utils.is_number_item (stack:get_name ()) then
+				if stack then
 					local imeta = stack:get_meta ()
 
 					if imeta then
-						imeta:set_int ("value", value)
-						imeta:set_int ("description", value)
-						inv:set_stack ("value", 1, stack)
+						if utils.is_value_item (stack:get_name ()) or
+							utils.is_action_value_item (stack:get_name ()) or
+							utils.is_condition_value_item (stack:get_name ()) then
+
+							imeta:set_string ("value", fields.number_value)
+							imeta:set_string ("description", fields.number_value)
+							inv:set_stack ("value", 1, stack)
+						end
 					end
 				end
 			end
@@ -333,8 +337,13 @@ local function allow_metadata_inventory_move (pos, from_list, from_index, to_lis
 			if inv then
 				local stack = inv:get_stack (from_list, from_index)
 
-				if stack and utils.is_number_item (stack:get_name ()) then
-					return 1
+				if stack then
+					if utils.is_value_item (stack:get_name ()) or
+						utils.is_action_value_item (stack:get_name ()) or
+						utils.is_condition_value_item (stack:get_name ()) then
+
+						return 1
+					end
 				end
 			end
 		end
@@ -526,7 +535,9 @@ end
 
 local function on_metadata_inventory_move (pos, from_list, from_index, to_list, to_index, count, player)
 	if (from_list == "program" and to_list == "commands") or
-		(from_list == "commands" and to_list == "program") then
+		(from_list == "commands" and to_list == "program") or
+		(from_list == "value" and to_list == "commands") or
+		(from_list == "commands" and to_list == "value") then
 
 		local meta = minetest.get_meta (pos)
 
