@@ -11,3 +11,8 @@ v 0.1.1
 
 v0.1.2
 *	Added variables, node name values, odd and even conditions.
+
+
+v0.1.3
+*	fixed detect of anything
+*	added yield if long running code

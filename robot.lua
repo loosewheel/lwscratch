@@ -216,35 +216,6 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 		utils.prep_inventory (inv, program)
 	end
 
-	-- orientate
-	if placer and placer:is_player () then
-		local angle = placer:get_look_horizontal ()
-		local node = minetest.get_node (pos)
-		local param2 = 2
-
-		if angle >= (math.pi * 0.25) and angle < (math.pi * 0.75) then
-			-- x-
-			param2 = 3
-		elseif angle >= (math.pi * 0.75) and angle < (math.pi * 1.25) then
-			-- z-
-			param2 = 1
-		elseif angle >= (math.pi * 1.25) and angle < (math.pi * 1.75) then
-			-- x+
-			param2 = 4
-		else
-			-- z+
-			param2 = 2
-		end
-
-		if meta then
-			meta:set_int ("param2", param2)
-		end
-
-		if node.name ~= "ignore" then
-			node.param2 = param2
-		end
-	end
-
 	if persists == 1 then
 		minetest.forceload_block (pos, false)
 	end

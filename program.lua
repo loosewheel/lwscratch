@@ -632,7 +632,7 @@ local function run_condition_detect (program, robot_pos)
 	local node = utils.robot_detect (robot_pos, side)
 
 	if not item then
-		return node ~= nil
+		return node ~= nil and node ~= "air"
 	end
 
 	return node == item
@@ -1278,6 +1278,7 @@ function program_obj:new (program, pos)
 	obj.program = program
 	obj.stopped = false
 	obj.pos = { x = (pos and pos.x) or 0, y = (pos and pos.y) or 0, z = (pos and pos.z) or 0 }
+	obj.loops_executed = 0
 
 	if program then
 		program_obj.init (obj)
@@ -1520,6 +1521,8 @@ function program_obj:push_loop (line, indent)
 			self.program.loops[#self.program.loops].counter + 1
 
 	end
+
+	self.loops_executed = self.loops_executed + 1
 end
 
 
@@ -1627,6 +1630,17 @@ end
 
 
 
+function program_obj:yield ()
+	local meta = minetest.get_meta (self.pos)
+
+	if meta then
+		meta:set_int ("delay_counter",
+			math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
+	end
+end
+
+
+
 function program_obj:check ()
 	if not self.program then
 		return nil
@@ -1676,8 +1690,17 @@ function program_obj:run ()
 	while cmd do
 		local indent = self:line_indent ()
 
-		if indent <= self:loop_indent () and self:line () > self:loop_line () then
+		if indent <= self:loop_indent () and
+			self:line () > self:loop_line () then
+
 			self:jump_to_line (self:loop_line ())
+
+			if self.loops_executed > 50 then
+				self:yield ()
+				self:serialize ()
+
+				return true
+			end
 		else
 			if run_table[cmd.command] then
 				if run_table[cmd.command] (self, self.pos) then
