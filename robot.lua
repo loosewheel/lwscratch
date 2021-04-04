@@ -204,14 +204,14 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 
 		local inv = meta:get_inventory ()
 
-		inv:set_size("value", 1)
-		inv:set_width("value", 1)
-		inv:set_size("program", utils.program_inv_size)
-		inv:set_width("program", 9)
-		inv:set_size("commands", utils.commands_inv_size)
-		inv:set_width("commands", 8)
-		inv:set_size("storage", 32)
-		inv:set_width("storage", 8)
+		inv:set_size ("value", 1)
+		inv:set_width ("value", 1)
+		inv:set_size ("program", utils.program_inv_size)
+		inv:set_width ("program", 10)
+		inv:set_size ("commands", utils.commands_inv_size)
+		inv:set_width ("commands", 8)
+		inv:set_size ("storage", 32)
+		inv:set_width ("storage", 8)
 
 		utils.prep_inventory (inv, program)
 	end

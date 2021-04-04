@@ -16,3 +16,7 @@ v0.1.2
 v0.1.3
 *	fixed detect of anything
 *	added yield if long running code
+
+
+v0.1.4
+*	minor bug fixes

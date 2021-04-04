@@ -207,7 +207,7 @@ local check_condition_table =
 
 local function check_condition (program, last_condition)
 	local must_follow = true
-	local can_and_not = false
+	local can_and_or = false
 
 	while true do
 		local cmd = program:next_cell (false)
@@ -233,25 +233,25 @@ local function check_condition (program, last_condition)
 
 		if cmd.command == "lwscratch:cmd_op_not" then
 			must_follow = true
-			can_and_not = false
+			can_and_or = false
 			last_condition = "not"
 
 		elseif cmd.command == "lwscratch:cmd_op_and" then
-			if not can_and_not then
+			if not can_and_or then
 				return false, "out of place and"
 			end
 
 			must_follow = true
-			can_and_not = false
+			can_and_or = false
 			last_condition = "and"
 
 		elseif cmd.command == "lwscratch:cmd_op_or" then
-			if not can_and_not then
+			if not can_and_or then
 				return false, "out of place or"
 			end
 
 			must_follow = true
-			can_and_not = false
+			can_and_or = false
 			last_condition = "or"
 
 		else
@@ -262,7 +262,7 @@ local function check_condition (program, last_condition)
 			end
 
 			must_follow = false
-			can_and_not = true
+			can_and_or = true
 		end
 	end
 end
@@ -1301,7 +1301,7 @@ end
 
 function program_obj:serialize ()
 	if not self.program then
-		return nil
+		return false
 	end
 
 	local meta = minetest.get_meta (self.pos)
@@ -1643,7 +1643,7 @@ end
 
 function program_obj:check ()
 	if not self.program then
-		return nil
+		return false
 	end
 
 	self:init ()
