@@ -535,9 +535,9 @@ end
 
 function utils.get_robot_formspec (pos)
 	local persists =
-		"image_button[21.05,3.0;0.7,0.7;persist_button_off.png;persists;;false;false;persist_button_off.png]"
+		"image_button[21.05,3.0;0.7,0.7;lw_itch_persist_button_off.png;persists;;false;false;lw_itch_persist_button_off.png]"
 	local power =
-		"image_button[20.7,1.0;1.4,1.4;power_button_off.png;power;;false;false;power_button_off.png]"
+		"image_button[20.7,1.0;1.4,1.4;lw_itch_power_button_off.png;power;;false;false;lw_itch_power_button_off.png]"
 	local error_msg = ""
 
 	local meta = minetest.get_meta (pos)
@@ -545,12 +545,12 @@ function utils.get_robot_formspec (pos)
 	if meta then
 		if meta:get_int ("persists") == 1 then
 			persists =
-				"image_button[21.05,3.0;0.7,0.7;persist_button_on.png;persists;;false;false;persist_button_on.png]"
+				"image_button[21.05,3.0;0.7,0.7;lw_itch_persist_button_on.png;persists;;false;false;lw_itch_persist_button_on.png]"
 		end
 
 		if meta:get_int ("running") == 1 then
 			power =
-				"image_button[20.7,1.0;1.4,1.4;power_button_on.png;power;;false;false;power_button_on.png]"
+				"image_button[20.7,1.0;1.4,1.4;lw_itch_power_button_on.png;power;;false;false;lw_itch_power_button_on.png]"
 		end
 
 		local msg = meta:get_string ("error")

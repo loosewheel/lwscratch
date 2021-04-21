@@ -592,8 +592,8 @@ end
 
 minetest.register_node ("lwscratch:robot", {
    description = S("Itch"),
-   tiles = { "robot_top.png", "robot_bottom.png", "robot_left.png",
-				 "robot_right.png", "robot_back.png", "robot_face.png" },
+   tiles = { "lw_itch_top.png", "lw_itch_bottom.png", "lw_itch_left.png",
+				 "lw_itch_right.png", "lw_itch_back.png", "lw_itch_face.png" },
    drawtype = "nodebox",
 	node_box = {
 		type = "fixed",
@@ -655,8 +655,8 @@ minetest.register_node ("lwscratch:robot", {
 
 minetest.register_node ("lwscratch:robot_on", {
    description = S("Itch"),
-   tiles = { "robot_top.png", "robot_bottom.png", "robot_left.png",
-				 "robot_right.png", "robot_back.png", "robot_face_on.png" },
+   tiles = { "lw_itch_top.png", "lw_itch_bottom.png", "lw_itch_left.png",
+				 "lw_itch_right.png", "lw_itch_back.png", "lw_itch_face_on.png" },
    drawtype = "nodebox",
 	node_box = {
 		type = "fixed",
