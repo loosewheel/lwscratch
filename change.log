@@ -24,3 +24,7 @@ v0.1.4
 
 v0.1.5
 *	fix texture name conflicts
+
+
+v0.1.6
+*	fixed commands showing in creative inventory.
