@@ -13,7 +13,7 @@ CC-BY-SA 3.0
 
 Version
 =======
-0.1.6
+0.1.7
 
 
 Minetest Version
@@ -342,6 +342,12 @@ Wait
 Stop
 	Stops the robot's program.
 
+Chat
+	Followed by a text or variable item, the contents of which is sent to
+	the chat. If the robot is private the message is only sent to the owner.
+	If the robot is public and the Allow public chat setting is enabled
+	the message is sent to all.
+
 Variable assign
 	If followed by a name
 		Assigns the node name in the given direction to this variable.
@@ -413,6 +419,11 @@ Robot's movement delay (float)
 	Delay (wait) in seconds for a robot's movement. Enforced minimum of 0.1
 	seconds.
 	Default: 0.5
+
+Allow public chat (bool)
+	Allow chat command on public machines. If disabled the command is
+	ignored.
+	Default: true
 
 
 

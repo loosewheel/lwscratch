@@ -6,3 +6,6 @@ lwscratch_robot_action_delay (Robot's action delay) float 0.2
 
 # Delay in seconds for a robot's movement, min 0.1
 lwscratch_robot_move_delay (Robot's movement delay) float 0.5
+
+# Allow chat command on public machines
+lwscratch_allow_public_chat (Allow public chat) bool true

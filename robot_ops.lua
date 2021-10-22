@@ -884,7 +884,28 @@ end
 
 
 
+function utils.robot_chat (robot_pos, message)
+	local meta = minetest.get_meta (robot_pos)
 
+	if meta then
+		local owner = meta:get_string ("owner")
+
+		if not owner or owner == "" then
+			if utils.settings.public_chat then
+				minetest.chat_send_all (tostring (message or ""))
+			end
+		else
+			minetest.chat_send_player (owner, tostring (message or ""))
+		end
+
+		meta:set_int ("delay_counter",
+			math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
+
+		return true
+	end
+
+	return false
+end
 
 
 

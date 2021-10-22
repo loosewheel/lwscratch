@@ -12,6 +12,9 @@ utils.settings.robot_move_delay =
 utils.settings.robot_action_delay =
 	tonumber(minetest.settings:get("lwscratch_robot_action_delay") or 0.2)
 
+utils.settings.public_chat =
+	minetest.settings:get_bool ("lwscratch_allow_public_chat", true)
+
 if utils.settings.robot_move_delay < 0.1 then
 	utils.settings.robot_move_delay = 0.1
 end

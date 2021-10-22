@@ -28,3 +28,8 @@ v0.1.5
 
 v0.1.6
 *	fixed commands showing in creative inventory.
+
+
+v0.1.7
+*	Added chat command.
+*	Added Allow public chat setting.

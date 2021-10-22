@@ -293,6 +293,16 @@ minetest.register_craftitem ("lwscratch:cmd_act_wait", {
 
 
 
+minetest.register_craftitem ("lwscratch:cmd_act_chat", {
+	description = S("Chat"),
+	short_description = S("Chat"),
+	groups = { not_in_creative_inventory = 1 },
+	inventory_image = "lw_act_chat.png",
+	stack_max = 1
+})
+
+
+
 minetest.register_craftitem ("lwscratch:cmd_act_value_assign", {
 	description = S("Variable assign"),
 	short_description = S("Variable assign"),

@@ -380,6 +380,20 @@ end
 
 
 
+local function check_chat (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "variable or text must follow chat"
+end
+
+
+
 local function check_craft (program)
 	local cmd = program:next_cell (false)
 
@@ -581,6 +595,7 @@ local check_table =
 	["lwscratch:cmd_name_up"] = check_name,
 	["lwscratch:cmd_act_stop"] = check_stop,
 	["lwscratch:cmd_act_wait"] = check_wait,
+	["lwscratch:cmd_act_chat"] = check_chat,
 	["lwscratch:cmd_act_value_assign"] = check_action_value_assign,
 	["lwscratch:cmd_act_value_plus"] = check_action_value_plus,
 	["lwscratch:cmd_act_value_minus"] = check_action_value_no_text,
@@ -1030,6 +1045,21 @@ end
 
 
 
+local function run_chat (program, robot_pos)
+	local item = program:next_cell ()
+	local message = ""
+
+	if utils.is_value_item (item.command) then
+		message = tostring (program:get_value (item))
+	end
+
+	utils.robot_chat (robot_pos, message)
+
+	return true
+end
+
+
+
 local function run_craft (program, robot_pos)
 	local item = program:next_cell ()
 
@@ -1249,6 +1279,7 @@ local run_table =
 	["lwscratch:cmd_act_craft"] = run_craft,
 	["lwscratch:cmd_act_stop"] = run_stop,
 	["lwscratch:cmd_act_wait"] = run_wait,
+	["lwscratch:cmd_act_chat"] = run_chat,
 	["lwscratch:cmd_act_value_assign"] = run_action_value_assign,
 	["lwscratch:cmd_act_value_plus"] = run_action_value_plus,
 	["lwscratch:cmd_act_value_minus"] = run_action_value_minus,

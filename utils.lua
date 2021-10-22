@@ -210,7 +210,7 @@ function utils.prep_inventory (inv, program)
 
 		"lwscratch:cmd_act_stop",
 		"lwscratch:cmd_act_wait",
-		"",
+		"lwscratch:cmd_act_chat",
 		"",
 		"",
 		"",
