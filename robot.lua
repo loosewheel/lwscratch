@@ -592,6 +592,7 @@ end
 
 minetest.register_node ("lwscratch:robot", {
    description = S("Itch"),
+   paramtype = "light",
    tiles = { "lw_itch_top.png", "lw_itch_bottom.png", "lw_itch_left.png",
 				 "lw_itch_right.png", "lw_itch_back.png", "lw_itch_face.png" },
    drawtype = "nodebox",
@@ -655,6 +656,7 @@ minetest.register_node ("lwscratch:robot", {
 
 minetest.register_node ("lwscratch:robot_on", {
    description = S("Itch"),
+   paramtype = "light",
    tiles = { "lw_itch_top.png", "lw_itch_bottom.png", "lw_itch_left.png",
 				 "lw_itch_right.png", "lw_itch_back.png", "lw_itch_face_on.png" },
    drawtype = "nodebox",
