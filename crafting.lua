@@ -1,3 +1,4 @@
+if not minetest.get_modpath("default") then return end
 local utils = ...
 local S = utils.S
 
