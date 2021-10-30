@@ -46,7 +46,7 @@ Description
 ===========
 This mod provides scratch programmable robots.
 
-Installing LWDrops is recommended if support by your game. Without it
+Installing LWDrops is recommended if supported by your game. Without it
 when a robot is dropped the program sheet is cleared.
 
 The first time a robot is placed in the world a form opens asking the
