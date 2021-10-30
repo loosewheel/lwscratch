@@ -37,3 +37,7 @@ v0.1.7
 
 v0.1.8
 *	Fixed lighting.
+
+
+v0.1.9
+*	Made mod game agnostic.

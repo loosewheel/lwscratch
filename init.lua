@@ -1,12 +1,4 @@
-local version = "0.1.8"
-
-
-
-if not lwdrops then
-	minetest.log ("error", "lwscratch could not find dependency lwdrops")
-
-	return
-end
+local version = "0.1.9"
 
 
 

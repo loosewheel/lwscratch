@@ -552,13 +552,22 @@ end
 
 
 local function on_drop (itemstack, dropper, pos)
-	local drops = lwdrops.store (itemstack, "program")
+	if minetest.global_exists ("lwdrops") then
+		local drops = lwdrops.store (itemstack, "program")
 
-	if drops then
-		return minetest.item_drop (drops, dropper, pos)
+		if drops then
+			return minetest.item_drop (drops, dropper, pos)
+		end
+
+		return itemstack
+	else
+		local meta = itemstack:get_meta ()
+		if meta then
+			meta:set_string ("program", "")
+		end
+
+		return minetest.item_drop (itemstack, dropper, pos)
 	end
-
-	return itemstack
 end
 
 
@@ -627,7 +636,11 @@ minetest.register_node ("lwscratch:robot", {
       fixed = { -0.5, -0.5, -0.375, 0.5, 0.5, 0.375 }
    },
 	groups = { cracky = 2, oddly_breakable_by_hand = 2 },
-	sounds = default.node_sound_wood_defaults (),
+	sounds = {
+		footstep = { name = "lwscratch_footstep", gain = 0.3 },
+		dug = { name = "lwscratch_dug", gain = 1.0 },
+		place = { name = "lwscratch_place", gain = 1.0 }
+	},
 	paramtype = "light",
 	param1 = 0,
 	paramtype2 = "facedir",
@@ -692,7 +705,11 @@ minetest.register_node ("lwscratch:robot_on", {
       fixed = { -0.5, -0.5, -0.375, 0.5, 0.5, 0.375 }
    },
 	groups = { cracky = 2, oddly_breakable_by_hand = 2, not_in_creative_inventory = 1 },
-	sounds = default.node_sound_wood_defaults (),
+	sounds = {
+		footstep = { name = "lwscratch_footstep", gain = 0.3 },
+		dug = { name = "lwscratch_dug", gain = 1.0 },
+		place = { name = "lwscratch_place", gain = 1.0 }
+	},
 	paramtype = "light",
 	param1 = 0,
 	paramtype2 = "facedir",
