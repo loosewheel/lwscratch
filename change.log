@@ -40,4 +40,13 @@ v0.1.8
 
 
 v0.1.9
-*	Made mod game agnostic.
+*	Made mod game agnostic (must remember to enable lwdrops if required).
+
+
+v0.1.10
+*	Added directional options to place_substitute.lua.
+*	Updated place_substitute.lua with new farming plants.
+*	Improved placement.
+*	Added Use mod on_place setting.
+*	Variable even and odd tests integer value of variable
+*	Fixed movement of items within storage inventory.

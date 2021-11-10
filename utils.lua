@@ -515,11 +515,19 @@ utils.crafting_mods = dofile (utils.modpath.."/crafting_mods.lua")
 
 
 
-function utils.get_place_substitute (item)
+function utils.get_place_substitute (item, dir)
 	local subst = utils.place_substitute[item]
 
 	if subst then
-		return subst
+		if type (subst) == "table" then
+			if dir and type (subst[dir]) == "string" then
+				return subst[dir]
+			elseif type (subst[1]) == "string" then
+				return subst[1]
+			end
+		elseif type (subst) == "string" then
+			return subst
+		end
 	end
 
 	return item
@@ -605,6 +613,26 @@ function utils.get_robot_formspec (pos)
 		"listcolors[#545454;#6E6E6E;#6281BF]"
 
 	return spec
+end
+
+
+
+function utils.find_item_def (name)
+	local def = minetest.registered_items[name]
+
+	if not def then
+		def = minetest.registered_craftitems[name]
+	end
+
+	if not def then
+		def = minetest.registered_nodes[name]
+	end
+
+	if not def then
+		def = minetest.registered_tools[name]
+	end
+
+	return def
 end
 
 

@@ -13,7 +13,7 @@ CC-BY-SA 3.0
 
 Version
 =======
-0.1.9
+0.1.10
 
 
 Minetest Version
@@ -183,12 +183,12 @@ Variable is greater than
 	*Must be set with a name in the top slot.
 
 Variable is even
-	Results in true if the variable is currently an even number.
+	Results in true if the variable is currently an even number (integer part).
 
 	*Must be set with a name in the top slot.
 
 Variable is odd
-	Results in true if the variable is currently an odd number.
+	Results in true if the variable is currently an odd number (integer part).
 
 	*Must be set with a name in the top slot.
 
@@ -428,12 +428,19 @@ Allow public chat (bool)
 	ignored.
 	Default: true
 
+Use mod on_place (bool)
+	Attempt to use mod on_place handler to place nodes.
+	Default: true
+
 
 
 *	The file 'place_substitute.lua' in the mod folder contains a list of
 	item/node substitutes, useful for farming etc. Modify this file for
 	additional substitutes. The field name is the item/node to be
-	substituted. The value is what it is substituted with.
+	substituted. The value can be a string or a table with one indexed string
+	of the default substitute item. This table can optionally contain key
+	values of strings for each direction. Recognised keys are "up", "down",
+	"front", "back".
 
 *	The file 'crafting_mods.lua' in the mod folder contains a list of
 	crafting modifications. Modify this file as necessary. The field name

@@ -1,6 +1,6 @@
 return
 {
-	-- ["mod:stated_item"] = "mod:used_item",
+	-- ["mod:stated_item"] = "mod:use_item" or { "mod:use_item", up = "...", down = "...", front = "...", back = "..." },
 	["farming:seed_barley"] = "farming:barley_1",
 	["farming:beans"] = "farming:beanpole_1",
 	["farming:blueberries"] = "farming:blueberry_1",
@@ -31,5 +31,11 @@ return
 	["farming:chili_pepper"] = "farming:chili_1",
 	["farming:cabbage"] = "farming:cabbage_1",
 	["farming:seed_mint"] = "farming:mint_1",
-	["default:torch"] = "default:torch_wall"
+	["farming:artichoke"] = "farming:artichoke_1",
+	["farming:blackberry"] = "farming:blackberry_1",
+	["farming:lettuce"] = "farming:lettuce_1",
+	["farming:parsley"] = "farming:parsley_1",
+	["farming:soy_pod"] = "farming:soy_1",
+	["farming:vanilla"] = "farming:vanilla_1",
+	["default:torch"] = { "default:torch_wall", down = "default:torch", up = "default:torch_ceiling" }
 }

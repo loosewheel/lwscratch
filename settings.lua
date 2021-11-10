@@ -15,6 +15,9 @@ utils.settings.robot_action_delay =
 utils.settings.public_chat =
 	minetest.settings:get_bool ("lwscratch_allow_public_chat", true)
 
+utils.settings.use_mod_on_place =
+	minetest.settings:get_bool ("lwscratch_use_mod_on_place", true)
+
 if utils.settings.robot_move_delay < 0.1 then
 	utils.settings.robot_move_delay = 0.1
 end

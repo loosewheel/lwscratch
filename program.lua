@@ -759,7 +759,7 @@ end
 local function run_condition_variable_even (program, robot_pos)
 	local var = tonumber (program:get_value (program:cur_command ()) or 0) or 0
 
-	return (var % 2) == 0
+	return math.floor (var % 2) == 0
 end
 
 
@@ -767,7 +767,7 @@ end
 local function run_condition_variable_odd (program, robot_pos)
 	local var = tonumber (program:get_value (program:cur_command ()) or 0) or 0
 
-	return (var () % 2) == 1
+	return math.floor (var () % 2) == 1
 end
 
 

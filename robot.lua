@@ -375,7 +375,7 @@ local function allow_metadata_inventory_move (pos, from_list, from_index, to_lis
 		end
 
 	elseif from_list == "storage" then
-		if to_list == "main" then
+		if to_list == "main" or to_list == "storage" then
 			return utils.settings.default_stack_max
 
 		elseif to_list == "program" then

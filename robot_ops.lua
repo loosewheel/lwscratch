@@ -62,6 +62,59 @@ end
 
 
 
+local function get_place_dir (itemname, robot_pos, robot_param2, dir)
+	if dir then
+		local side_pos = get_robot_side (robot_pos, robot_param2, dir)
+
+		if side_pos then
+			local vdir = vector.subtract (side_pos, robot_pos)
+			local def = utils.find_item_def (itemname)
+
+			if def and def.paramtype2 then
+				if def.paramtype2 == "wallmounted" then
+					return minetest.dir_to_wallmounted (vdir)
+				elseif def.paramtype2 == "facedir" then
+					return minetest.dir_to_facedir (vdir, false)
+				end
+			end
+		end
+	end
+
+	return 0
+end
+
+
+
+local function get_robot_side_vector (param2, side)
+	local dir = minetest.facedir_to_dir (param2)
+
+	if side == "up" then
+		return { x = 0, y = 1, z = 0 }
+	elseif side == "down" then
+		return { x = 0, y = -1, z = 0 }
+	elseif side == "left" then
+		return vector.rotate (dir, { x = 0, y = (math.pi * 1.5), z = 0 })
+	elseif side == "right" then
+		return vector.rotate (dir, { x = 0, y = (math.pi * 0.5), z = 0 })
+	elseif side == "front" then
+		return vector.rotate (dir, { x = 0, y = math.pi, z = 0 })
+	elseif side == "front up" then
+		return { x = 0, y = 1, z = 0 }
+	elseif side == "front down" then
+		return { x = 0, y = -1, z = 0 }
+	elseif side == "back" then
+		return dir
+	elseif side == "back up" then
+		return { x = 0, y = 1, z = 0 }
+	elseif side == "back down" then
+		return { x = 0, y = -1, z = 0 }
+	else
+		return dir
+	end
+end
+
+
+
 function utils.robot_detect (robot_pos, side)
 	local node = minetest.get_node_or_nil (robot_pos)
 
@@ -279,6 +332,38 @@ end
 
 
 
+local function place_node (nodename, pos, param2, side)
+	local stack = ItemStack (nodename)
+
+	if stack then
+		local vec = get_robot_side_vector (param2, side)
+		local pointed_thing =
+		{
+			type = "node",
+			under = pos,
+			above = { x = pos.x - vec.x, y = pos.y - vec.y, z = pos.z - vec.z },
+		}
+		local def = utils.find_item_def (nodename)
+
+		if nodename:sub (1, 8) == "farming:" then
+			pointed_thing.under = { x = pos.x + vec.x, y = pos.y + vec.y, z = pos.z + vec.z }
+			pointed_thing.above = pos
+		end
+
+		local result, msg = false, ""
+
+		if def and def.on_place then
+			result, msg = pcall (def.on_place, stack, nil, pointed_thing)
+		end
+
+		return result
+	end
+
+	return false
+end
+
+
+
 function utils.robot_place (robot_pos, side, nodename)
 	nodename = tostring (nodename or "")
 
@@ -308,11 +393,31 @@ function utils.robot_place (robot_pos, side, nodename)
 		return false
 	end
 
+	local place_pos = { x = pos.x, y = pos.y, z = pos.z }
+	local dir = side
+	if dir == "front down" or dir == "back down" then
+		dir = "down"
+	elseif dir == "front up" or dir == "back up" then
+		dir = "up"
+	end
+
 	if node.name ~= "air" then
 		local nodedef = minetest.registered_nodes[node.name]
 
 		if not nodedef or not nodedef.buildable_to or minetest.is_protected (pos, "") then
 			return false
+		end
+
+		if nodedef.buildable_to then
+			if dir == "up" then
+				place_pos = get_robot_side (pos, cur_node.param2, "down")
+			elseif dir == "down" then
+				place_pos = get_robot_side (pos, cur_node.param2, "up")
+			elseif dir == "front" then
+				place_pos = get_robot_side (pos, cur_node.param2, "back")
+			elseif dir == "back" then
+				place_pos = get_robot_side (pos, cur_node.param2, "front")
+			end
 		end
 	end
 
@@ -320,9 +425,21 @@ function utils.robot_place (robot_pos, side, nodename)
 		return false
 	end
 
-	nodename = utils.get_place_substitute (nodename)
+	if utils.settings.use_mod_on_place then
+		if not place_node (nodename, place_pos, cur_node.param2, side) then
+			local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
 
-	minetest.set_node (pos, { name = nodename, param1 = 0, param2 = 0})
+			nodename = utils.get_place_substitute (nodename, dir)
+
+			minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
+		end
+	else
+		local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
+
+		nodename = utils.get_place_substitute (nodename, dir)
+
+		minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
+	end
 
 	meta:set_int ("delay_counter",
 		math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
