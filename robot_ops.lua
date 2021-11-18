@@ -115,6 +115,61 @@ end
 
 
 
+local function get_max_stack (item)
+	local def = nil
+
+	if type (item) == "string" then
+		def = utils.find_item_def (item)
+	elseif item and item.get_name then
+		def = utils.find_item_def (item:get_name ())
+	end
+
+	if def and def.stack_max then
+		return def.stack_max
+	end
+
+	return utils.settings.default_stack_max
+end
+
+
+
+local function get_max_inventory_fit (item, inv, list)
+	local stack_max = get_max_stack (item)
+	local stack = ItemStack ({ name = item, count = stack_max })
+
+	while stack_max > 0 and not inv:room_for_item (list, stack) do
+		stack_max = stack_max - 1
+		stack:set_count (stack_max)
+	end
+
+	return stack_max
+end
+
+
+
+local function get_total_inventory_item (item, inv, list)
+	local stack_count = 0
+	local slots = inv:get_size (list)
+
+	if not slots then
+		return 0
+	end
+
+	for s = 1, slots do
+		local stack = inv:get_stack (list, s)
+
+		if stack and not stack:is_empty () then
+			if stack:get_name () == item then
+				stack_count = stack_count + stack:get_count ()
+			end
+		end
+	end
+
+	return stack_count
+end
+
+
+
 function utils.robot_detect (robot_pos, side)
 	local node = minetest.get_node_or_nil (robot_pos)
 
@@ -292,7 +347,13 @@ function utils.robot_dig (robot_pos, side)
 	end
 
 	if nodedef.can_dig then
-		if nodedef.can_dig (pos) == false then
+		local result, diggable = pcall (nodedef.can_dig, pos)
+
+		if not result then
+			minetest.log ("error", "can_dig handler for "..node.name.." crashed - "..diggable)
+
+			return nil
+		elseif diggable == false then
 			return nil
 		end
 	end
@@ -303,23 +364,29 @@ function utils.robot_dig (robot_pos, side)
 	end
 
 	local items = minetest.get_node_drops (node, nil)
+
 	if items then
+		drops = { }
+
 		for i = 1, #items do
-			local stack = ItemStack (items[i])
-			local name = items[i]:match ("[%S]+")
+			drops[i] = ItemStack (items[i])
+		end
 
-			if name == node.name and stack then
-				if nodedef.preserve_metadata then
-					nodedef.preserve_metadata (pos, node, minetest.get_meta (pos), { stack })
-				end
-			end
+		if nodedef and nodedef.preserve_metadata then
+			nodedef.preserve_metadata (pos, node, minetest.get_meta (pos), drops)
+		end
 
-			local over = inv:add_item ("storage", stack)
+		for i = 1, #items do
+			local over = inv:add_item ("storage", drops[i])
 
 			if over and over:get_count () > 0 then
-				minetest.item_drop (over, nil, pos)
+				utils.item_drop (over, nil, pos)
 			end
 		end
+	end
+
+	if nodedef and nodedef.sounds and nodedef.sounds.dug then
+		pcall (minetest.sound_play, nodedef.sounds.dug, { pos = pos })
 	end
 
 	minetest.remove_node (pos)
@@ -328,38 +395,6 @@ function utils.robot_dig (robot_pos, side)
 		math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
 
 	return node.name
-end
-
-
-
-local function place_node (nodename, pos, param2, side)
-	local stack = ItemStack (nodename)
-
-	if stack then
-		local vec = get_robot_side_vector (param2, side)
-		local pointed_thing =
-		{
-			type = "node",
-			under = pos,
-			above = { x = pos.x - vec.x, y = pos.y - vec.y, z = pos.z - vec.z },
-		}
-		local def = utils.find_item_def (nodename)
-
-		if nodename:sub (1, 8) == "farming:" then
-			pointed_thing.under = { x = pos.x + vec.x, y = pos.y + vec.y, z = pos.z + vec.z }
-			pointed_thing.above = pos
-		end
-
-		local result, msg = false, ""
-
-		if def and def.on_place then
-			result, msg = pcall (def.on_place, stack, nil, pointed_thing)
-		end
-
-		return result
-	end
-
-	return false
 end
 
 
@@ -425,20 +460,60 @@ function utils.robot_place (robot_pos, side, nodename)
 		return false
 	end
 
+	local def = utils.find_item_def (nodename)
+	local placed = false
+	local vec = get_robot_side_vector (cur_node.param2, side)
+	local pointed_thing =
+	{
+		type = "node",
+		under = place_pos,
+		above = { x = place_pos.x - vec.x,
+					 y = place_pos.y - vec.y,
+					 z = place_pos.z - vec.z },
+	}
+
+	if nodename:sub (1, 8) == "farming:" then
+		pointed_thing.under = { x = place_pos.x + vec.x,
+										y = place_pos.y + vec.y,
+										z = place_pos.z + vec.z }
+		pointed_thing.above = place_pos
+	end
+
 	if utils.settings.use_mod_on_place then
-		if not place_node (nodename, place_pos, cur_node.param2, side) then
-			local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
+		if def and def.on_place then
+			local result, msg = pcall (def.on_place, stack, nil, pointed_thing)
 
-			nodename = utils.get_place_substitute (nodename, dir)
+			placed = result
 
-			minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
+			if not placed then
+				minetest.log ("error", "on_place handler for "..nodename.." crashed - "..msg)
+			end
 		end
-	else
-		local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
+	end
 
-		nodename = utils.get_place_substitute (nodename, dir)
+	if not placed then
+		local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
+		local substitute = utils.get_place_substitute (nodename, dir)
+
+		if nodename ~= substitute then
+			nodename = substitute
+			stack = ItemStack (nodename)
+			def = utils.find_item_def (nodename)
+		end
 
 		minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
+
+		if stack and def and def.after_place_node then
+			local result, msg = pcall (def.after_place_node, pos, nil, stack, pointed_thing)
+
+			if not result then
+				minetest.log ("error", "after_place_node handler for "..nodename.." crashed - "..msg)
+			end
+		end
+
+		if def and  def.sounds and def.sounds.place then
+			pcall (minetest.sound_play, def.sounds.place, { pos = pos })
+		end
 	end
 
 	meta:set_int ("delay_counter",
@@ -740,6 +815,152 @@ end
 
 
 
+function utils.robot_put_stack (robot_pos, side, item)
+	local meta = minetest.get_meta (robot_pos)
+	local cur_node = minetest.get_node_or_nil (robot_pos)
+
+	if not meta or not cur_node then
+		return false
+	end
+
+	local inv = meta:get_inventory ()
+
+	if not inv then
+		return false
+	end
+
+	local pos = get_robot_side (robot_pos, cur_node.param2, side)
+
+	if not pos then
+		return false
+	end
+
+	local node = get_far_node (pos)
+
+	if not node then
+		return false
+	end
+
+	if node.name == "air" then
+		return false
+	end
+
+	local imeta =  minetest.get_meta (pos)
+
+	if not imeta then
+		return false
+	end
+
+	local iinv = imeta:get_inventory ()
+
+	if not iinv then
+		return false
+	end
+
+	if item then
+		local stack_count = get_total_inventory_item (item, inv, "storage")
+		local stack_max = get_max_inventory_fit (item, iinv, "main")
+		local slots = inv:get_size ("storage")
+
+		if not slots or stack_max < 1 or stack_count < 1 then
+			return false
+		end
+
+		if stack_count > stack_max then
+			stack_count = stack_max
+		end
+
+		local stack = ItemStack ({ name = item, count = stack_count })
+
+		if not stack then
+			return false
+		end
+
+		iinv:add_item("main", stack)
+		inv:remove_item ("storage", stack)
+	end
+
+	meta:set_int ("delay_counter",
+		math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
+
+	return true
+end
+
+
+
+function utils.robot_pull_stack (robot_pos, side, item)
+	local meta = minetest.get_meta (robot_pos)
+	local cur_node = minetest.get_node_or_nil (robot_pos)
+
+	if not meta or not cur_node then
+		return false
+	end
+
+	local inv = meta:get_inventory ()
+
+	if not inv then
+		return false
+	end
+
+	local pos = get_robot_side (robot_pos, cur_node.param2, side)
+
+	if not pos then
+		return false
+	end
+
+	local node = get_far_node (pos)
+
+	if not node then
+		return false
+	end
+
+	if node.name == "air" then
+		return false
+	end
+
+	local imeta =  minetest.get_meta (pos)
+
+	if not imeta then
+		return false
+	end
+
+	local iinv = imeta:get_inventory ()
+
+	if not iinv then
+		return false
+	end
+
+	if item then
+		local stack_count = get_total_inventory_item (item, iinv, "main")
+		local stack_max = get_max_inventory_fit (item, inv, "storage")
+		local slots = iinv:get_size ("main")
+
+		if not slots or stack_max < 1 or stack_count < 1 then
+			return false
+		end
+
+		if stack_count > stack_max then
+			stack_count = stack_max
+		end
+
+		local stack = ItemStack ({ name = item, count = stack_count })
+
+		if not stack then
+			return false
+		end
+
+		inv:add_item("storage", stack)
+		iinv:remove_item ("main", stack)
+	end
+
+	meta:set_int ("delay_counter",
+		math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
+
+	return true
+end
+
+
+
 local function substitute_group (item, inv)
 	local source = ItemStack (item)
 
@@ -798,13 +1019,15 @@ function utils.robot_craft (robot_pos, item)
 
 			local items = { }
 			for i = 1, #recipes[r].items do
-				local stack = substitute_group (recipes[r].items[i], inv)
+				if type (recipes[r].items[i]) == "string" then
+					local stack = substitute_group (recipes[r].items[i], inv)
 
-				if stack then
-					if items[stack:get_name ()] then
-						items[stack:get_name ()] = items[stack:get_name ()] + stack:get_count ()
-					else
-						items[stack:get_name ()] = stack:get_count ()
+					if stack then
+						if items[stack:get_name ()] then
+							items[stack:get_name ()] = items[stack:get_name ()] + stack:get_count ()
+						else
+							items[stack:get_name ()] = stack:get_count ()
+						end
 					end
 				end
 			end
@@ -964,9 +1187,9 @@ function utils.robot_remove_item (robot_pos, item, drop)
 		inv:remove_item ("storage", stack)
 
 		if drop then
-			minetest.item_drop (stack, nil, robot_pos)
+			utils.item_drop (stack, nil, robot_pos)
 		else
-			lwdrops.on_destroy (stack)
+			utils.on_destroy (stack)
 		end
 
 	else
@@ -984,13 +1207,61 @@ function utils.robot_remove_item (robot_pos, item, drop)
 				inv:set_stack ("storage", s, nil)
 
 				if drop then
-					minetest.item_drop (stack, nil, robot_pos)
+					utils.item_drop (stack, nil, robot_pos)
 				else
-					lwdrops.on_destroy (stack)
+					utils.on_destroy (stack)
 				end
 			end
 		end
 
+	end
+
+	meta:set_int ("delay_counter",
+		math.ceil (utils.settings.robot_action_delay / utils.settings.running_tick))
+
+	return true
+end
+
+
+
+function utils.robot_remove_stack (robot_pos, item, drop)
+	local count = 1
+	local name = nil
+
+	local meta = minetest.get_meta (robot_pos)
+	if not meta then
+		return false
+	end
+
+	local inv = meta:get_inventory ()
+	if not inv then
+		return false
+	end
+
+	if item then
+		local max_stack = get_max_stack (item)
+		local stack_count = get_total_inventory_item (item, inv, "storage")
+
+		if stack_count < 1 or max_stack < 1 then
+			return false
+		end
+
+		if stack_count > max_stack then
+			stack_count = max_stack
+		end
+
+		local stack = ItemStack ({ name = item, count = stack_count })
+		if not stack then
+			return false
+		end
+
+		inv:remove_item ("storage", stack)
+
+		if drop then
+			utils.item_drop (stack, nil, robot_pos)
+		else
+			utils.on_destroy (stack)
+		end
 	end
 
 	meta:set_int ("delay_counter",

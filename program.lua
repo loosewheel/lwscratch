@@ -324,6 +324,36 @@ end
 
 
 
+local function check_pull_stack (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) or
+		utils.is_inventory_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, variable or text must follow pull stack"
+end
+
+
+
+local function check_put_stack (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) or
+		utils.is_inventory_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, variable or text must follow put stack"
+end
+
+
+
 local function check_drop (program)
 	local cmd = program:next_cell (false)
 
@@ -358,6 +388,36 @@ local function check_trash (program)
 	end
 
 	return false, "item, blank, variable or text must follow trash"
+end
+
+
+
+local function check_drop_stack (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) or
+		utils.is_inventory_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, variable or text must follow drop stack"
+end
+
+
+
+local function check_trash_stack (program)
+	local cmd = program:next_cell (false)
+
+	if utils.is_text_item (cmdstr (cmd)) or
+		utils.is_variable_item (cmdstr (cmd)) or
+		utils.is_inventory_item (cmdstr (cmd)) then
+
+		return true
+	end
+
+	return false, "item, variable or text must follow trash stack"
 end
 
 
@@ -571,8 +631,12 @@ local check_table =
 	["lwscratch:cmd_act_turn_right"] = check_turn,
 	["lwscratch:cmd_act_pull"] = check_pull,
 	["lwscratch:cmd_act_put"] = check_put,
+	["lwscratch:cmd_act_pull_stack"] = check_pull_stack,
+	["lwscratch:cmd_act_put_stack"] = check_put_stack,
 	["lwscratch:cmd_act_drop"] = check_drop,
 	["lwscratch:cmd_act_trash"] = check_trash,
+	["lwscratch:cmd_act_drop_stack"] = check_drop_stack,
+	["lwscratch:cmd_act_trash_stack"] = check_trash_stack,
 	["lwscratch:cmd_act_place_front"] = check_place,
 	["lwscratch:cmd_act_place_front_down"] = check_place,
 	["lwscratch:cmd_act_place_front_up"] = check_place,
@@ -975,6 +1039,39 @@ end
 
 
 
+
+local function run_pull_stack (program, robot_pos)
+	local item = program:next_cell ()
+
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_pull_stack (robot_pos, "front", item)
+
+	return true
+end
+
+
+
+local function run_put_stack (program, robot_pos)
+	local item = program:next_cell ()
+
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_put_stack (robot_pos, "front", item)
+
+	return true
+end
+
+
+
 local function run_drop (program, robot_pos)
 	local item = program:next_cell ()
 
@@ -1005,6 +1102,38 @@ local function run_trash (program, robot_pos)
 	end
 
 	utils.robot_remove_item (robot_pos, item, false)
+
+	return true
+end
+
+
+
+local function run_drop_stack (program, robot_pos)
+	local item = program:next_cell ()
+
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_remove_stack (robot_pos, item, true)
+
+	return true
+end
+
+
+
+local function run_trash_stack (program, robot_pos)
+	local item = program:next_cell ()
+
+	if utils.is_value_item (item.command) then
+		item = tostring (program:get_value (item))
+	else -- item
+		item = item.command
+	end
+
+	utils.robot_remove_stack (robot_pos, item, false)
 
 	return true
 end
@@ -1266,8 +1395,12 @@ local run_table =
 	["lwscratch:cmd_act_turn_right"] = run_turn,
 	["lwscratch:cmd_act_pull"] = run_pull,
 	["lwscratch:cmd_act_put"] = run_put,
+	["lwscratch:cmd_act_pull_stack"] = run_pull_stack,
+	["lwscratch:cmd_act_put_stack"] = run_put_stack,
 	["lwscratch:cmd_act_drop"] = run_drop,
 	["lwscratch:cmd_act_trash"] = run_trash,
+	["lwscratch:cmd_act_drop_stack"] = run_drop_stack,
+	["lwscratch:cmd_act_trash_stack"] = run_trash_stack,
 	["lwscratch:cmd_act_place_front"] = run_place,
 	["lwscratch:cmd_act_place_front_down"] = run_place,
 	["lwscratch:cmd_act_place_front_up"] = run_place,

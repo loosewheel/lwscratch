@@ -1,4 +1,4 @@
-local version = "0.1.10"
+local version = "0.1.11"
 
 
 
@@ -13,7 +13,7 @@ end
 
 
 local utils = { }
-utils.commands_inv_size = 112
+utils.commands_inv_size = 120
 utils.program_inv_size = 500
 
 local modpath = minetest.get_modpath ("lwscratch")

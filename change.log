@@ -50,3 +50,10 @@ v0.1.10
 *	Added Use mod on_place setting.
 *	Variable even and odd tests integer value of variable
 *	Fixed movement of items within storage inventory.
+
+
+v0.1.11
+*	Fixed crafting group bug.
+*	Improved item drop and place.
+*	Moved clear button.
+*	Added pull stack, put stack, drop stack and trash stack.

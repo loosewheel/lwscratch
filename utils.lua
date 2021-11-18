@@ -21,6 +21,65 @@ utils.worldpath = minetest.get_worldpath ()
 
 
 
+if minetest.global_exists ("lwdrops") then
+	utils.store_drops = lwdrops.store
+	utils.on_destroy = lwdrops.on_destroy
+
+else
+	utils.store_drops = function (itemstack, ... )
+		local fields = { ... }
+		local meta = itemstack:get_meta ()
+
+		if meta then
+			for i = 1, #fields do
+				meta:set_string (fields[i], "")
+			end
+		end
+
+		return itemstack
+	end
+
+
+	utils.on_destroy = function (itemstack)
+	end
+end
+
+
+
+function utils.find_item_def (name)
+	local def = minetest.registered_items[name]
+
+	if not def then
+		def = minetest.registered_craftitems[name]
+	end
+
+	if not def then
+		def = minetest.registered_nodes[name]
+	end
+
+	if not def then
+		def = minetest.registered_tools[name]
+	end
+
+	return def
+end
+
+
+
+function utils.item_drop (itemstack, dropper, pos)
+	if itemstack then
+		local def = utils.find_item_def (itemstack:get_name ())
+
+		if def and def.on_drop then
+			return def.on_drop (itemstack, dropper, pos)
+		end
+	end
+
+	return minetest.item_drop (itemstack, dropper, pos)
+end
+
+
+
 utils.robots_list = { }
 
 function utils.add_robot_to_list (id, pos)
@@ -192,9 +251,18 @@ function utils.prep_inventory (inv, program)
 
 		"lwscratch:cmd_act_pull",
 		"lwscratch:cmd_act_put",
+		"lwscratch:cmd_act_pull_stack",
+		"lwscratch:cmd_act_put_stack",
+		"",
+		"lwscratch:cmd_act_craft",
+		"",
+		"",
+
 		"lwscratch:cmd_act_drop",
 		"lwscratch:cmd_act_trash",
-		"lwscratch:cmd_act_craft",
+		"lwscratch:cmd_act_drop_stack",
+		"lwscratch:cmd_act_trash_stack",
+		"",
 		"",
 		"",
 		"",
@@ -577,9 +645,9 @@ function utils.get_robot_formspec (pos)
 		"no_prepend[]"..
 		"bgcolor[#769BE6]"..
 
-		"field[1.0,1.0;2.5,0.8;name;Robot;${name}]"..
-		"button[3.5,1.0;1.0,0.8;setname;Set]"..
-		"button[4.6,1.0;1.4,0.8;clear_program;Clear]"..
+		"button[1.0,1.0;1.4,0.8;clear_program;Clear]"..
+		"field[2.5,1.0;2.5,0.8;name;Robot;${name}]"..
+		"button[5.0,1.0;1.0,0.8;setname;Set]"..
 
 		"style_type[list;noclip=false;size=1.0,1.0;spacing=0.0,0.0]"..
 		-- value
@@ -613,26 +681,6 @@ function utils.get_robot_formspec (pos)
 		"listcolors[#545454;#6E6E6E;#6281BF]"
 
 	return spec
-end
-
-
-
-function utils.find_item_def (name)
-	local def = minetest.registered_items[name]
-
-	if not def then
-		def = minetest.registered_craftitems[name]
-	end
-
-	if not def then
-		def = minetest.registered_nodes[name]
-	end
-
-	if not def then
-		def = minetest.registered_tools[name]
-	end
-
-	return def
 end
 
 

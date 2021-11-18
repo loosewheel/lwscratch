@@ -19,7 +19,7 @@ minetest.register_craft({
 else
 
 
-local game_id = Settings(minetest.get_worldpath()..DIR_DELIM..'world.mt'):get('gameid')
+local game_id = Settings (minetest.get_worldpath()..DIR_DELIM..'world.mt'):get ('gameid')
 
 if game_id == "mineclone2" then
 

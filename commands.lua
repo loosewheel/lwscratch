@@ -223,6 +223,26 @@ minetest.register_craftitem ("lwscratch:cmd_act_put", {
 
 
 
+minetest.register_craftitem ("lwscratch:cmd_act_pull_stack", {
+	description = S("Pull stack"),
+	short_description = S("Pull stack"),
+	groups = { not_in_creative_inventory = 1 },
+	inventory_image = "lw_act_pull_stack.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_put_stack", {
+	description = S("Put stack"),
+	short_description = S("Put stack"),
+	groups = { not_in_creative_inventory = 1 },
+	inventory_image = "lw_act_put_stack.png",
+	stack_max = 1
+})
+
+
+
 minetest.register_craftitem ("lwscratch:cmd_act_turn_left", {
 	description = S("Turn left"),
 	short_description = S("Turn left"),
@@ -268,6 +288,26 @@ minetest.register_craftitem ("lwscratch:cmd_act_trash", {
 	short_description = S("Trash"),
 	groups = { not_in_creative_inventory = 1 },
 	inventory_image = "lw_act_trash.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_drop_stack", {
+	description = S("Drop stack"),
+	short_description = S("Drop stack"),
+	groups = { not_in_creative_inventory = 1 },
+	inventory_image = "lw_act_drop_stack.png",
+	stack_max = 1
+})
+
+
+
+minetest.register_craftitem ("lwscratch:cmd_act_trash_stack", {
+	description = S("Trash stack"),
+	short_description = S("Trash stack"),
+	groups = { not_in_creative_inventory = 1 },
+	inventory_image = "lw_act_trash_stack.png",
 	stack_max = 1
 })
 

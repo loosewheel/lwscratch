@@ -115,7 +115,7 @@ local function on_receive_fields (pos, formname, fields, sender)
 					local stack = inv:get_stack ("program", s)
 
 					if stack and not stack:is_empty () then
-						lwdrops.on_destroy (stack)
+						utils.on_destroy (stack)
 					end
 
 					inv:set_stack ("program", s, nil)
@@ -552,22 +552,13 @@ end
 
 
 local function on_drop (itemstack, dropper, pos)
-	if minetest.global_exists ("lwdrops") then
-		local drops = lwdrops.store (itemstack, "program")
+	local drops = utils.store_drops (itemstack, "program")
 
-		if drops then
-			return minetest.item_drop (drops, dropper, pos)
-		end
-
-		return itemstack
-	else
-		local meta = itemstack:get_meta ()
-		if meta then
-			meta:set_string ("program", "")
-		end
-
-		return minetest.item_drop (itemstack, dropper, pos)
+	if drops then
+		return minetest.item_drop (drops, dropper, pos)
 	end
+
+	return itemstack
 end
 
 
