@@ -18,6 +18,9 @@ utils.settings.public_chat =
 utils.settings.use_mod_on_place =
 	minetest.settings:get_bool ("lwscratch_use_mod_on_place", true)
 
+utils.settings.alert_handler_errors =
+	minetest.settings:get_bool ("lwscratch_alert_handler_errors", true)
+
 if utils.settings.robot_move_delay < 0.1 then
 	utils.settings.robot_move_delay = 0.1
 end

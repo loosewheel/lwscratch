@@ -350,7 +350,9 @@ function utils.robot_dig (robot_pos, side)
 		local result, diggable = pcall (nodedef.can_dig, pos)
 
 		if not result then
-			minetest.log ("error", "can_dig handler for "..node.name.." crashed - "..diggable)
+			if utils.settings.alert_handler_errors then
+				minetest.log ("error", "can_dig handler for "..node.name.." crashed - "..diggable)
+			end
 
 			return nil
 		elseif diggable == false then
@@ -481,12 +483,16 @@ function utils.robot_place (robot_pos, side, nodename)
 
 	if utils.settings.use_mod_on_place then
 		if def and def.on_place then
-			local result, msg = pcall (def.on_place, stack, nil, pointed_thing)
+			local result, leftover = pcall (def.on_place, stack, nil, pointed_thing)
 
 			placed = result
 
 			if not placed then
-				minetest.log ("error", "on_place handler for "..nodename.." crashed - "..msg)
+				if utils.settings.alert_handler_errors then
+					minetest.log ("error", "on_place handler for "..nodename.." crashed - "..leftover)
+				end
+			elseif leftover and leftover.get_count and leftover:get_count () > 0 then
+				inv:add_item ("storage", leftover)
 			end
 		end
 	end
@@ -501,13 +507,19 @@ function utils.robot_place (robot_pos, side, nodename)
 			def = utils.find_item_def (nodename)
 		end
 
+		if not minetest.registered_nodes[nodename] then
+			return false
+		end
+
 		minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
 
 		if stack and def and def.after_place_node then
 			local result, msg = pcall (def.after_place_node, pos, nil, stack, pointed_thing)
 
 			if not result then
-				minetest.log ("error", "after_place_node handler for "..nodename.." crashed - "..msg)
+				if utils.settings.alert_handler_errors then
+					minetest.log ("error", "after_place_node handler for "..nodename.." crashed - "..msg)
+				end
 			end
 		end
 

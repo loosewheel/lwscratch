@@ -57,3 +57,7 @@ v0.1.11
 *	Improved item drop and place.
 *	Moved clear button.
 *	Added pull stack, put stack, drop stack and trash stack.
+
+
+v0.1.12
+*	Fixed bug in node placement.
