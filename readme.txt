@@ -432,6 +432,10 @@ Use mod on_place (bool)
 	Attempt to use mod on_place handler to place nodes.
 	Default: true
 
+Alert handler errors
+	Issue errors when handler's of other mods fail.
+	Default: true
+
 
 
 *	The file 'place_substitute.lua' in the mod folder contains a list of
