@@ -98,7 +98,9 @@ All variable items, whether they are values, conditions or actions, must
 be given a name. Set the name by placing it in the top slot, entering the
 name in the Value field and clicking Set. All variable items with the same
 name are the same variable value, whether being set with a value, testing
-or using its value.
+or using its value. Variables are never given a value in the top slot,
+only a name. Their value is always set or changed in the program. The
+Number and Text commands hold values.
 
 
 Statements:
@@ -290,6 +292,17 @@ Pull
 		Moves everything from an inventory (chest) immediately in front of
 		the robot, into the robot's storage or as much as can fit.
 
+Pull Stack
+	If followed by an inventory item
+		Moves up to a full stack of the given inventory items from an
+		inventory (chest) immediately in front of the robot, into the
+		robot's storage if it can fit.
+
+	If followed by a text or variable item
+		Moves up to a full stack of the inventory items named in the text
+		or variable's value from an inventory (chest) immediately in front
+		of the robot, into the robot's storage if it can fit.
+
 Put
 	If followed by an inventory item
 		Moves one of the given inventory items from the robot's storage into
@@ -305,6 +318,17 @@ Put
 		Moves everything from the robot's storage into an inventory (chest)
 		immediately in front of the robot, or as much as can fit.
 
+Put Stack
+	If followed by an inventory item
+		Moves up to a full stack of the given inventory items from the
+		robot's storage into an inventory (chest) immediately in front of
+		the robot, if it can fit.
+
+	If followed by a text or variable item
+		Moves up to a full stack of the inventory items named in the text
+		or variable's value from the robot's storage into an inventory
+		(chest) immediately in front of the robot, if it can fit.
+
 Drop
 	If followed by an inventory item
 		Drops one of the given inventory items from the robot's storage into
@@ -317,6 +341,16 @@ Drop
 	If followed by a blank space
 		Drops everything from the robot's storage into the world.
 
+Drop Stack
+	If followed by an inventory item
+		Drops up to a full stack of the given inventory items from the
+		robot's storage into the world, if it contains any.
+
+	If followed by a text or variable item
+		Drops up to a full stack of the inventory items named in the text
+		or variable's value from the robot's storage into the world, if it
+		contains any.
+
 Trash
 	If followed by an inventory item
 		Destroys (gone forever) one of the given inventory items in the
@@ -328,6 +362,16 @@ Trash
 
 	If followed by a blank space
 		Destroys (gone forever) everything in the robot's storage.
+
+Trash Stack
+	If followed by an inventory item
+		Destroys (gone forever) up to a full stack of the given inventory
+		items in the robot's storage, if it contains any.
+
+	If followed by a text or variable item
+		Destroys (gone forever) up to a full stack of the inventory items
+		named in the text or variable's value in the robot's storage, if
+		it contains any.
 
 Craft
 	If followed by an inventory item
