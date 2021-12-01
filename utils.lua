@@ -663,10 +663,10 @@ function utils.get_robot_formspec (pos)
 		"scroll_container_end[]"..
 
 		-- commands
-		"scrollbaroptions[min=0;max=90;smallstep=10;largestep=10;thumbsize=25;arrows=default]"..
-		"scrollbar[20.0,1.0;0.5,5.0;vertical;commands_scroll;0-90]"..
+		"scrollbaroptions[min=0;max=100;smallstep=10;largestep=10;thumbsize=25;arrows=default]"..
+		"scrollbar[20.0,1.0;0.5,5.0;vertical;commands_scroll;0-100]"..
 		"scroll_container[12.0,1.0;8.0,5.0;commands_scroll;vertical;0.1]"..
-		"list[context;commands;0.0,0.0;8,14;]\n"..
+		"list[context;commands;0.0,0.0;8,15;]\n"..
 		"scroll_container_end[]"..
 
 		power..

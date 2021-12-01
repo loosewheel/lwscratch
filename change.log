@@ -61,3 +61,8 @@ v0.1.11
 
 v0.1.12
 *	Fixed bug in node placement.
+
+
+v0.1.13
+*	Fixed not returning item to storage when not placed by manual placing.
+*	Fixed command pallet scrolling.

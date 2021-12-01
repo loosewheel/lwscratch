@@ -508,6 +508,8 @@ function utils.robot_place (robot_pos, side, nodename)
 		end
 
 		if not minetest.registered_nodes[nodename] then
+			inv:add_item ("storage", stack)
+
 			return false
 		end
 
