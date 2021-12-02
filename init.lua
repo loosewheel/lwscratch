@@ -1,4 +1,4 @@
-local version = "0.1.13"
+local version = "0.1.14"
 
 
 
@@ -26,6 +26,7 @@ loadfile (modpath.."/commands.lua") (utils)
 loadfile (modpath.."/program.lua") (utils)
 loadfile (modpath.."/robot_ops.lua") (utils)
 loadfile (modpath.."/robot.lua") (utils)
+loadfile (modpath.."/cassette.lua") (utils)
 loadfile (modpath.."/crafting.lua") (utils)
 
 

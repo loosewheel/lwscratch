@@ -20,8 +20,8 @@ Media license
 Round button backgrounds are derived from author qubodup's work, released
 as public domain. See https://opengameart.org/content/pony-icons-pink
 
-Thumb and trash images derived from images from https://openclipart.org, and
-is public domain.
+Thumb, trash and cassette images derived from images from
+https://openclipart.org, and is public domain.
 
 Sounds copied from Minetest Game under Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0).
 

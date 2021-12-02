@@ -66,6 +66,60 @@ end
 
 
 
+function utils.get_far_node (pos)
+	local node = minetest.get_node (pos)
+
+	if node.name == "ignore" then
+		minetest.get_voxel_manip ():read_from_map (pos, pos)
+
+		node = minetest.get_node (pos)
+
+		if node.name == "ignore" then
+			return nil
+		end
+	end
+
+	return node
+end
+
+
+
+function utils.get_on_rightclick (pos, player)
+	local node = utils.get_far_node (pos)
+
+	if node then
+		local def = minetest.registered_nodes[node.name]
+
+		if def and def.on_rightclick and
+			not (player and player:is_player () and
+				  player:get_player_control ().sneak) then
+
+				return def.on_rightclick
+		end
+	end
+
+	return nil
+end
+
+
+
+function utils.get_palette_index (itemstack)
+	local stack = ItemStack (itemstack)
+	local color = 0
+
+	if stack then
+		local tab = stack:to_table ()
+
+		if tab and tab.meta and tab.meta.palette_index then
+			color = tonumber (tab.meta.palette_index) or 240
+		end
+	end
+
+	return color
+end
+
+
+
 function utils.item_drop (itemstack, dropper, pos)
 	if itemstack then
 		local def = utils.find_item_def (itemstack:get_name ())
@@ -208,6 +262,9 @@ function utils.get_program (inv)
 					else
 						minetest.log ("error", "lwscratch - unable to get number value.")
 					end
+
+				elseif utils.is_inventory_item (stack:get_name ()) then
+					cmd.value = stack:to_string ()
 
 				end
 			end
@@ -384,6 +441,50 @@ function utils.prep_inventory (inv, program)
 							else
 								minetest.log ("error", "lwscratch - unable to set number value.")
 							end
+
+						elseif utils.is_inventory_item (stack:get_name ()) then
+							stack = ItemStack (line[c].value or line[c].command)
+
+						end
+
+						inv:set_stack ("program", ((l - 1) * 10) + c, stack)
+
+					else
+						minetest.log ("error", "lwscratch - unable to set program command.")
+					end
+				end
+			end
+		end
+	end
+end
+
+
+
+function utils.set_robot_program (inv, program)
+	if program then
+		for l = 1, #program do
+			local line = program[l]
+
+			for c = 1, #line do
+				if line[c] and line[c].command then
+					local stack = ItemStack (line[c].command)
+
+					if stack then
+						if utils.is_value_item (stack:get_name ()) or
+							utils.is_action_value_item (stack:get_name ()) or
+							utils.is_condition_value_item (stack:get_name ()) then
+
+							local meta = stack:get_meta ()
+
+							if meta then
+								meta:set_string ("value", tostring (line[c].value or ""))
+								meta:set_string ("description", tostring (line[c].value or ""))
+							else
+								minetest.log ("error", "lwscratch - unable to set number value.")
+							end
+
+						elseif utils.is_inventory_item (stack:get_name ()) then
+							stack = ItemStack (line[c].value or line[c].command)
 
 						end
 

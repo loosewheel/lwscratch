@@ -1163,6 +1163,8 @@ local function run_place (program, robot_pos)
 
 	if utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
 	else
 		item = item.command
 	end

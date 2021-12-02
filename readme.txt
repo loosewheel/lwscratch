@@ -13,7 +13,7 @@ CC-BY-SA 3.0
 
 Version
 =======
-0.1.13
+0.1.14
 
 
 Minetest Version
@@ -47,7 +47,7 @@ Description
 This mod provides scratch programmable robots.
 
 Installing LWDrops is recommended if supported by your game. Without it
-when a robot is dropped the program sheet is cleared.
+when a robot or cassette is dropped the program sheet is cleared.
 
 The first time a robot is placed in the world a form opens asking the
 player that placed it, if the machine is public or private. If private is
@@ -80,6 +80,13 @@ is indented to the same level or less, this marks the end of the block.
 
 To run the program click the power button. If the program has an error a
 red message below the program sheet details the error.
+
+If a robot is left clicked with a cassette the robot's program is copied
+to the cassette. Then the cassette can be right clicked in the air and
+it's label can be changed, and it can be toggled read only. If read only
+left clicking a robot will not overwrite the cassette. Right click + sneak a
+robot to copy the program from the cassette to the robot. If a robot is
+owned by another player it cannot be copied from or to.
 
 
 See lwscratch.pdf in docs folder.

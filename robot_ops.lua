@@ -44,25 +44,7 @@ end
 
 
 
-local function get_far_node (pos)
-	local node = minetest.get_node (pos)
-
-	if node.name == "ignore" then
-		minetest.get_voxel_manip ():read_from_map (pos, pos)
-
-		node = minetest.get_node (pos)
-
-		if node.name == "ignore" then
-			return nil
-		end
-	end
-
-	return node
-end
-
-
-
-local function get_place_dir (itemname, robot_pos, robot_param2, dir)
+local function get_place_dir (itemname, robot_pos, robot_param2, dir, pallet_index)
 	if dir then
 		local side_pos = get_robot_side (robot_pos, robot_param2, dir)
 
@@ -71,10 +53,19 @@ local function get_place_dir (itemname, robot_pos, robot_param2, dir)
 			local def = utils.find_item_def (itemname)
 
 			if def and def.paramtype2 then
-				if def.paramtype2 == "wallmounted" then
-					return minetest.dir_to_wallmounted (vdir)
-				elseif def.paramtype2 == "facedir" then
-					return minetest.dir_to_facedir (vdir, false)
+				if def.paramtype2 == "wallmounted" or
+					def.paramtype2 == "colorwallmounted" then
+
+					return minetest.dir_to_wallmounted (vdir) + (pallet_index * 8)
+
+				elseif def.paramtype2 == "facedir" or
+						 def.paramtype2 == "colorfacedir" then
+
+					return minetest.dir_to_facedir (vdir, false) + (pallet_index * 32)
+
+				elseif def.paramtype2 == "color" then
+					return pallet_index
+
 				end
 			end
 		end
@@ -177,7 +168,7 @@ function utils.robot_detect (robot_pos, side)
 		local pos = get_robot_side (robot_pos, node.param2, side)
 
 		if pos then
-			node = get_far_node (pos)
+			node = utils.get_far_node (pos)
 
 			if node then
 				return node.name
@@ -201,7 +192,7 @@ function utils.robot_move (robot_pos, side)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 	if not node then
 		return false
 	end
@@ -335,7 +326,7 @@ function utils.robot_dig (robot_pos, side)
 		return nil
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 	if not node then
 		return nil
 	end
@@ -425,7 +416,7 @@ function utils.robot_place (robot_pos, side, nodename)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 	if not node then
 		return false
 	end
@@ -462,7 +453,7 @@ function utils.robot_place (robot_pos, side, nodename)
 		return false
 	end
 
-	local def = utils.find_item_def (nodename)
+	local def = utils.find_item_def (stack:get_name ())
 	local placed = false
 	local vec = get_robot_side_vector (cur_node.param2, side)
 	local pointed_thing =
@@ -474,7 +465,7 @@ function utils.robot_place (robot_pos, side, nodename)
 					 z = place_pos.z - vec.z },
 	}
 
-	if nodename:sub (1, 8) == "farming:" then
+	if stack:get_name ():sub (1, 8) == "farming:" then
 		pointed_thing.under = { x = place_pos.x + vec.x,
 										y = place_pos.y + vec.y,
 										z = place_pos.z + vec.z }
@@ -489,8 +480,10 @@ function utils.robot_place (robot_pos, side, nodename)
 
 			if not placed then
 				if utils.settings.alert_handler_errors then
-					minetest.log ("error", "on_place handler for "..nodename.." crashed - "..leftover)
+					minetest.log ("error", "on_place handler for "..stack:get_name ().." crashed - "..leftover)
 				end
+			elseif not leftover then
+				inv:add_item ("storage", stack)
 			elseif leftover and leftover.get_count and leftover:get_count () > 0 then
 				inv:add_item ("storage", leftover)
 			end
@@ -498,29 +491,30 @@ function utils.robot_place (robot_pos, side, nodename)
 	end
 
 	if not placed then
-		local param2 = get_place_dir (nodename, robot_pos, cur_node.param2, dir)
-		local substitute = utils.get_place_substitute (nodename, dir)
+		local param2 = get_place_dir (stack:get_name (), robot_pos, cur_node.param2, dir,
+												utils.get_palette_index (stack))
+		local substitute = utils.get_place_substitute (stack:get_name (), dir)
+		local orgstack = ItemStack (stack)
 
-		if nodename ~= substitute then
-			nodename = substitute
-			stack = ItemStack (nodename)
-			def = utils.find_item_def (nodename)
+		if stack:get_name () ~= substitute then
+			stack = ItemStack (substitute)
+			def = utils.find_item_def (stack:get_name ())
 		end
 
-		if not minetest.registered_nodes[nodename] then
-			inv:add_item ("storage", stack)
+		if not minetest.registered_nodes[stack:get_name ()] then
+			inv:add_item ("storage", orgstack)
 
 			return false
 		end
 
-		minetest.set_node (pos, { name = nodename, param1 = 0, param2 = param2})
+		minetest.set_node (pos, { name = stack:get_name (), param1 = 0, param2 = param2 })
 
 		if stack and def and def.after_place_node then
 			local result, msg = pcall (def.after_place_node, pos, nil, stack, pointed_thing)
 
 			if not result then
 				if utils.settings.alert_handler_errors then
-					minetest.log ("error", "after_place_node handler for "..nodename.." crashed - "..msg)
+					minetest.log ("error", "after_place_node handler for "..stack:get_name ().." crashed - "..msg)
 				end
 			end
 		end
@@ -680,7 +674,7 @@ function utils.robot_put (robot_pos, side, item)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 
 	if not node then
 		return false
@@ -764,7 +758,7 @@ function utils.robot_pull (robot_pos, side, item)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 
 	if not node then
 		return false
@@ -849,7 +843,7 @@ function utils.robot_put_stack (robot_pos, side, item)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 
 	if not node then
 		return false
@@ -922,7 +916,7 @@ function utils.robot_pull_stack (robot_pos, side, item)
 		return false
 	end
 
-	local node = get_far_node (pos)
+	local node = utils.get_far_node (pos)
 
 	if not node then
 		return false
@@ -1143,7 +1137,7 @@ function utils.robot_find_inventory (robot_pos, listname)
 		local pos = get_robot_side (robot_pos, cur_node.param2, sides[s])
 
 		if pos then
-			local node = get_far_node (pos)
+			local node = utils.get_far_node (pos)
 
 			if node and node.name ~= "air" then
 				local meta =  minetest.get_meta (pos)

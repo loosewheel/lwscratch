@@ -66,3 +66,8 @@ v0.1.12
 v0.1.13
 *	Fixed not returning item to storage when not placed by manual placing.
 *	Fixed command pallet scrolling.
+
+
+v0.1.14
+*	Added cassettes.
+*	Improved support of param2 for placed nodes (pallet index is used as well).
