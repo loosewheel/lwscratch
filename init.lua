@@ -1,4 +1,4 @@
-local version = "0.1.14"
+local version = "0.2.0"
 
 
 
@@ -22,6 +22,7 @@ local worldpath = minetest.get_worldpath ()
 
 loadfile (modpath.."/settings.lua") (utils)
 loadfile (modpath.."/utils.lua") (utils)
+loadfile (modpath.."/encoder.lua") (utils)
 loadfile (modpath.."/commands.lua") (utils)
 loadfile (modpath.."/program.lua") (utils)
 loadfile (modpath.."/robot_ops.lua") (utils)

@@ -21,31 +21,6 @@ utils.worldpath = minetest.get_worldpath ()
 
 
 
-if minetest.global_exists ("lwdrops") then
-	utils.store_drops = lwdrops.store
-	utils.on_destroy = lwdrops.on_destroy
-
-else
-	utils.store_drops = function (itemstack, ... )
-		local fields = { ... }
-		local meta = itemstack:get_meta ()
-
-		if meta then
-			for i = 1, #fields do
-				meta:set_string (fields[i], "")
-			end
-		end
-
-		return itemstack
-	end
-
-
-	utils.on_destroy = function (itemstack)
-	end
-end
-
-
-
 function utils.find_item_def (name)
 	local def = minetest.registered_items[name]
 
@@ -62,6 +37,20 @@ function utils.find_item_def (name)
 	end
 
 	return def
+end
+
+
+
+function utils.on_destroy (itemstack)
+	local stack = ItemStack (itemstack)
+
+	if stack and stack:get_count () > 0 then
+		local def = utils.find_item_def (stack:get_name ())
+
+		if def and def.on_destroy then
+			def.on_destroy (stack)
+		end
+	end
 end
 
 
@@ -121,14 +110,6 @@ end
 
 
 function utils.item_drop (itemstack, dropper, pos)
-	if itemstack then
-		local def = utils.find_item_def (itemstack:get_name ())
-
-		if def and def.on_drop then
-			return def.on_drop (itemstack, dropper, pos)
-		end
-	end
-
 	return minetest.item_drop (itemstack, dropper, pos)
 end
 
@@ -420,47 +401,6 @@ function utils.prep_inventory (inv, program)
 		inv:set_stack ("commands", i, ItemStack (ops[i]))
 	end
 
-	if program then
-		for l = 1, #program do
-			local line = program[l]
-
-			for c = 1, #line do
-				if line[c] and line[c].command then
-					local stack = ItemStack (line[c].command)
-
-					if stack then
-						if utils.is_value_item (stack:get_name ()) or
-							utils.is_action_value_item (stack:get_name ()) or
-							utils.is_condition_value_item (stack:get_name ()) then
-
-							local meta = stack:get_meta ()
-
-							if meta then
-								meta:set_string ("value", tostring (line[c].value or ""))
-								meta:set_string ("description", tostring (line[c].value or ""))
-							else
-								minetest.log ("error", "lwscratch - unable to set number value.")
-							end
-
-						elseif utils.is_inventory_item (stack:get_name ()) then
-							stack = ItemStack (line[c].value or line[c].command)
-
-						end
-
-						inv:set_stack ("program", ((l - 1) * 10) + c, stack)
-
-					else
-						minetest.log ("error", "lwscratch - unable to set program command.")
-					end
-				end
-			end
-		end
-	end
-end
-
-
-
-function utils.set_robot_program (inv, program)
 	if program then
 		for l = 1, #program do
 			local line = program[l]

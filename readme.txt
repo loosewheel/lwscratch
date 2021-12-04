@@ -13,7 +13,7 @@ CC-BY-SA 3.0
 
 Version
 =======
-0.1.14
+0.2.0
 
 
 Minetest Version
@@ -28,7 +28,6 @@ Dependencies
 Optional Dependencies
 =====================
 default
-lwdrops
 intllib
 
 
@@ -45,9 +44,6 @@ https://forum.minetest.net/viewtopic.php?f=9&t=26455
 Description
 ===========
 This mod provides scratch programmable robots.
-
-Installing LWDrops is recommended if supported by your game. Without it
-when a robot or cassette is dropped the program sheet is cleared.
 
 The first time a robot is placed in the world a form opens asking the
 player that placed it, if the machine is public or private. If private is

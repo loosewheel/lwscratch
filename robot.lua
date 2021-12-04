@@ -138,7 +138,7 @@ local function preserve_metadata (pos, oldnode, oldmeta, drops)
 			local inv = meta:get_inventory ()
 
 			if imeta and inv then
-				local program = utils.get_program (inv)
+				local program = minetest.serialize (utils.encode_program (inv))
 				local description = meta:get_string ("name")
 
 				if description:len () < 1 then
@@ -148,11 +148,13 @@ local function preserve_metadata (pos, oldnode, oldmeta, drops)
 				imeta:set_int ("lwscratch_id", id)
 				imeta:set_string ("name", meta:get_string ("name"))
 				imeta:set_string ("infotext", meta:get_string ("infotext"))
-				imeta:set_string ("inventory", meta:get_string ("inventory"))
 				imeta:set_string ("description", description)
 				imeta:set_string ("owner", meta:get_string ("owner"))
 				imeta:set_int ("persists", meta:get_int ("persists"))
-				imeta:set_string ("program", minetest.serialize (program))
+
+				if program:len () <= 60000 then
+					imeta:set_string ("program", program)
+				end
 			end
 		end
 	end
@@ -180,7 +182,6 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 			if id > 0 then
 				name = imeta:get_string ("name")
 				infotext = imeta:get_string ("infotext")
-				inventory = imeta:get_string ("inventory")
 				owner = imeta:get_string ("owner")
 				persists = imeta:get_int ("persists")
 				program = minetest.deserialize (imeta:get_string ("program"))
@@ -194,7 +195,6 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 		meta:set_int ("lwscratch_id", id)
 		meta:set_string ("name", name)
 		meta:set_string ("infotext", infotext)
-		meta:set_string ("inventory", inventory)
 		meta:set_string ("owner", owner)
 		meta:set_int ("persists", persists)
 		meta:set_int ("running", 0)
@@ -213,7 +213,8 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 		inv:set_size ("storage", 32)
 		inv:set_width ("storage", 8)
 
-		utils.prep_inventory (inv, program)
+		utils.prep_inventory (inv, nil)
+		utils.dencode_program (inv, program)
 	end
 
 	if persists == 1 then
@@ -551,18 +552,6 @@ end
 
 
 
-local function on_drop (itemstack, dropper, pos)
-	local drops = utils.store_drops (itemstack, "program")
-
-	if drops then
-		return minetest.item_drop (drops, dropper, pos)
-	end
-
-	return itemstack
-end
-
-
-
 local function on_rightclick (pos, node, clicker, itemstack, pointed_thing)
 	if not utils.can_interact_with_node (pos, clicker) then
 		if clicker and clicker:is_player () then
@@ -654,7 +643,6 @@ minetest.register_node ("lwscratch:robot", {
 	on_metadata_inventory_move = on_metadata_inventory_move,
 	on_punch = on_punch_robot,
 	on_rightclick = on_rightclick,
-	on_drop = on_drop,
 })
 
 
@@ -723,7 +711,6 @@ minetest.register_node ("lwscratch:robot_on", {
 	on_metadata_inventory_move = on_metadata_inventory_move,
 	on_punch = on_punch_robot,
 	on_rightclick = on_rightclick,
-	on_drop = on_drop,
 })
 
 

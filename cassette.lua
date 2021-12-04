@@ -97,7 +97,7 @@ local function on_place (itemstack, placer, pointed_thing)
 				if imeta:get_string ("has_program") == "true" then
 					local program = minetest.deserialize (imeta:get_string ("program"))
 
-					utils.set_robot_program (inv, program)
+					utils.dencode_program (inv, program)
 
 					rmeta:set_string ("formspec", utils.get_robot_formspec (pointed_thing.under))
 
@@ -143,42 +143,31 @@ local function on_use (itemstack, user, pointed_thing)
 						local inv = rmeta:get_inventory ()
 
 						if inv then
-							local program = utils.get_program (inv)
-							local label = rmeta:get_string ("name")
+							local program = minetest.serialize (utils.encode_program (inv))
 
-							if label:len () < 1 then
-								label = "program"
-							end
+							if program:len () <= 60000 then
+								local label = rmeta:get_string ("name")
 
-							imeta:set_string ("program", minetest.serialize (program))
-							imeta:set_string ("label", label)
-							imeta:set_string ("description", label)
-							imeta:set_string ("has_program", "true")
+								if label:len () < 1 then
+									label = "program"
+								end
 
-							if user and user:is_player () then
+								imeta:set_string ("program", program)
+								imeta:set_string ("label", label)
+								imeta:set_string ("description", label)
+								imeta:set_string ("has_program", "true")
+
 								good_msg (user, "Robot "..rmeta:get_string ("name").." program was copied.")
+							else
+								bad_msg (user, "Program too large for cassette.")
 							end
 						end
 					else
-						if user and user:is_player () then
-							bad_msg (user, "Cassette locked.")
-						end
+						bad_msg (user, "Cassette locked.")
 					end
 				end
 			end
 		end
-	end
-
-	return itemstack
-end
-
-
-
-local function on_drop (itemstack, dropper, pos)
-	local drops = utils.store_drops (itemstack, "program", "has_program", "description")
-
-	if drops then
-		return minetest.item_drop (drops, dropper, pos)
 	end
 
 	return itemstack
@@ -197,7 +186,6 @@ minetest.register_craftitem ("lwscratch:cassette", {
 	range = 4.0,
 	on_place = on_place,
 	on_secondary_use = on_secondary_use,
-	on_drop = on_drop,
 	on_use = on_use,
 })
 

@@ -71,3 +71,13 @@ v0.1.13
 v0.1.14
 *	Added cassettes.
 *	Improved support of param2 for placed nodes (pallet index is used as well).
+
+
+v0.2.0
+*	Removed optional dependency lwdrops.
+	Existing cassettes will fail if try to copy program to robot, and may
+	cause a crash if dropped. Copy the program from a robot again and they
+	will be ok.
+	Existing robots in an inventory will fail when placed, and may cause
+	a crash if dropped. Place all robots before updated the mod to keep
+	them.
