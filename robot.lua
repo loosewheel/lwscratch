@@ -283,6 +283,19 @@ local function can_dig (pos, player)
 		local inv = meta:get_inventory ()
 
 		if inv then
+			local program = minetest.serialize (utils.encode_program (inv))
+
+			if program:len () > 60000 then
+				if player and player:is_player () then
+					minetest.chat_send_player (player:get_player_name (),
+														minetest.colorize ("#ff4040",
+																				 "Program too large to remember!"))
+
+					return false
+				end
+			end
+
+
 			if not inv:is_empty ("storage") then
 				return false
 			end

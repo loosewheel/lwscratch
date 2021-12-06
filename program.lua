@@ -1010,7 +1010,9 @@ local function run_pull (program, robot_pos)
 		item = nil
 	elseif utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1028,7 +1030,9 @@ local function run_put (program, robot_pos)
 		item = nil
 	elseif utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1045,7 +1049,9 @@ local function run_pull_stack (program, robot_pos)
 
 	if utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1061,7 +1067,9 @@ local function run_put_stack (program, robot_pos)
 
 	if utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1079,7 +1087,9 @@ local function run_drop (program, robot_pos)
 		item = nil
 	elseif utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1097,7 +1107,9 @@ local function run_trash (program, robot_pos)
 		item = nil
 	elseif utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1113,7 +1125,9 @@ local function run_drop_stack (program, robot_pos)
 
 	if utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 
@@ -1129,7 +1143,9 @@ local function run_trash_stack (program, robot_pos)
 
 	if utils.is_value_item (item.command) then
 		item = tostring (program:get_value (item))
-	else -- item
+	elseif utils.is_inventory_item (item.command) then
+		item = tostring (item.value)
+	else
 		item = item.command
 	end
 

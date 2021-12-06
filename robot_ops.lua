@@ -697,9 +697,15 @@ function utils.robot_put (robot_pos, side, item)
 	end
 
 	if item then
-		local stack = ItemStack ({ name = item, count = 1 })
+		local stack = ItemStack (item)
 
-		if not stack or not inv:contains_item ("storage", stack, false) then
+		if not stack then
+			return false
+		end
+
+		stack:set_count (1)
+
+		if not inv:contains_item ("storage", stack, false) then
 			return false
 		end
 
@@ -781,9 +787,15 @@ function utils.robot_pull (robot_pos, side, item)
 	end
 
 	if item then
-		local stack = ItemStack ({ name = item, count = 1 })
+		local stack = ItemStack (item)
 
-		if not stack or not iinv:contains_item ("main", stack, false) then
+		if not stack then
+			return false
+		end
+
+		stack:set_count (1)
+
+		if not iinv:contains_item ("main", stack, false) then
 			return false
 		end
 
@@ -866,8 +878,14 @@ function utils.robot_put_stack (robot_pos, side, item)
 	end
 
 	if item then
-		local stack_count = get_total_inventory_item (item, inv, "storage")
-		local stack_max = get_max_inventory_fit (item, iinv, "main")
+		local stack = ItemStack (item)
+
+		if not stack then
+			return false
+		end
+
+		local stack_count = get_total_inventory_item (stack:get_name (), inv, "storage")
+		local stack_max = get_max_inventory_fit (stack:get_name (), iinv, "main")
 		local slots = inv:get_size ("storage")
 
 		if not slots or stack_max < 1 or stack_count < 1 then
@@ -878,11 +896,7 @@ function utils.robot_put_stack (robot_pos, side, item)
 			stack_count = stack_max
 		end
 
-		local stack = ItemStack ({ name = item, count = stack_count })
-
-		if not stack then
-			return false
-		end
+		stack:set_count (stack_count)
 
 		iinv:add_item("main", stack)
 		inv:remove_item ("storage", stack)
@@ -939,8 +953,14 @@ function utils.robot_pull_stack (robot_pos, side, item)
 	end
 
 	if item then
-		local stack_count = get_total_inventory_item (item, iinv, "main")
-		local stack_max = get_max_inventory_fit (item, inv, "storage")
+		local stack = ItemStack (item)
+
+		if not stack then
+			return false
+		end
+
+		local stack_count = get_total_inventory_item (stack:get_name (), iinv, "main")
+		local stack_max = get_max_inventory_fit (stack:get_name (), inv, "storage")
 		local slots = iinv:get_size ("main")
 
 		if not slots or stack_max < 1 or stack_count < 1 then
@@ -951,11 +971,7 @@ function utils.robot_pull_stack (robot_pos, side, item)
 			stack_count = stack_max
 		end
 
-		local stack = ItemStack ({ name = item, count = stack_count })
-
-		if not stack then
-			return false
-		end
+		stack:set_count (stack_count)
 
 		inv:add_item("storage", stack)
 		iinv:remove_item ("main", stack)
@@ -1187,8 +1203,15 @@ function utils.robot_remove_item (robot_pos, item, drop)
 	end
 
 	if item then
-		local stack = ItemStack ({ name = item, count = 1 })
-		if not stack or not inv:contains_item ("storage", stack, false) then
+		local stack = ItemStack (item)
+
+		if not stack then
+			return false
+		end
+
+		stack:set_count (1)
+
+		if not inv:contains_item ("storage", stack, false) then
 			return false
 		end
 
@@ -1247,8 +1270,13 @@ function utils.robot_remove_stack (robot_pos, item, drop)
 	end
 
 	if item then
-		local max_stack = get_max_stack (item)
-		local stack_count = get_total_inventory_item (item, inv, "storage")
+		local stack = ItemStack (item)
+		if not stack then
+			return false
+		end
+
+		local max_stack = get_max_stack (stack:get_name ())
+		local stack_count = get_total_inventory_item (stack:get_name (), inv, "storage")
 
 		if stack_count < 1 or max_stack < 1 then
 			return false
@@ -1258,10 +1286,7 @@ function utils.robot_remove_stack (robot_pos, item, drop)
 			stack_count = max_stack
 		end
 
-		local stack = ItemStack ({ name = item, count = stack_count })
-		if not stack then
-			return false
-		end
+		stack:set_count (stack_count)
 
 		inv:remove_item ("storage", stack)
 

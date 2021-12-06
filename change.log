@@ -81,3 +81,9 @@ v0.2.0
 	Existing robots in an inventory will fail when placed, and may cause
 	a crash if dropped. Place all robots before updated the mod to keep
 	them.
+
+
+v0.2.1
+*	Calls on_drop when item is dropped.
+*	Improved retaining item data when dropped, pulled or put.
+*	If robot is dug by player and program is too large, wont dig and sends chat.

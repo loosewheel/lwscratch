@@ -110,6 +110,14 @@ end
 
 
 function utils.item_drop (itemstack, dropper, pos)
+	if itemstack then
+		local def = utils.find_item_def (itemstack:get_name ())
+
+		if def and def.on_drop then
+			return def.on_drop (itemstack, dropper, pos)
+		end
+	end
+
 	return minetest.item_drop (itemstack, dropper, pos)
 end
 
