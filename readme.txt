@@ -86,7 +86,7 @@ owned by another player it cannot be copied from or to.
 
 On the rare occasion a program may be too large in data to be remembered
 in the internal space. If this occurs, a cassette will not copy the
-program a send a chat message to the player, and a robot will not dig
+program and send a chat message to the player, and a robot will not dig
 and send a chat message to the player. If it is too large it will be an
 inventory item in the program sheet that's causing it. You could just
 remove this item to retain the program.
