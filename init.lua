@@ -1,4 +1,4 @@
-local version = "0.2.1"
+local version = "0.2.2"
 
 
 

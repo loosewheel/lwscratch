@@ -87,3 +87,8 @@ v0.2.1
 *	Calls on_drop when item is dropped.
 *	Improved retaining item data when dropped, pulled or put.
 *	If robot is dug by player and program is too large, wont dig and sends chat.
+
+
+v0.2.2
+*	Sanity check to decoder.
+*	Robots cannot dig nodes with group 'unbreakable'.

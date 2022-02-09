@@ -186,6 +186,10 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 				persists = imeta:get_int ("persists")
 				program = minetest.deserialize (imeta:get_string ("program"))
 
+				if type (program) ~= "table" then
+					program = nil
+				end
+
 				unique = true
 			else
 				id = math.random (1000000)
