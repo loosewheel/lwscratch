@@ -193,7 +193,7 @@ function utils.can_interact_with_node (pos, player)
 end
 
 
-
+--[[
 function utils.new_inventory ()
 	local commands = ""
 	for i = 1, utils.commands_inv_size do
@@ -218,7 +218,7 @@ function utils.new_inventory ()
 
 	return inv
 end
-
+]]
 
 
 function utils.get_program (inv)

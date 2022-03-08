@@ -3,7 +3,7 @@ local utils = ...
 
 
 local function get_robot_side (pos, param2, side)
-	local base = nil
+	local base
 
 	if side == "up" then
 		return { x = pos.x, y = pos.y + 1, z = pos.z }
@@ -361,7 +361,7 @@ function utils.robot_dig (robot_pos, side)
 	local items = minetest.get_node_drops (node, nil)
 
 	if items then
-		drops = { }
+		local drops = { }
 
 		for i = 1, #items do
 			drops[i] = ItemStack (items[i])
@@ -1191,9 +1191,6 @@ end
 
 
 function utils.robot_remove_item (robot_pos, item, drop)
-	local count = 1
-	local name = nil
-
 	local meta = minetest.get_meta (robot_pos)
 	if not meta then
 		return false
@@ -1258,9 +1255,6 @@ end
 
 
 function utils.robot_remove_stack (robot_pos, item, drop)
-	local count = 1
-	local name = nil
-
 	local meta = minetest.get_meta (robot_pos)
 	if not meta then
 		return false

@@ -213,7 +213,7 @@ function utils.dencode_program (inv, encoded)
 		for i = 1, utils.program_inv_size do
 			local c = code:sub (((i - 1) * 2) + 1, ((i - 1) * 2) + 2)
 			local name = dencode_cmd[c]
-			local stack = nil
+			local stack
 
 			if name == "itemstack" then
 				stack = ItemStack (rdata[rdata_idx])

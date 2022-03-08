@@ -472,27 +472,27 @@ end
 
 
 
-local function check_detect (program)
-	return false, "out of place detect"
-end
+--local function check_detect (program)
+	--return false, "out of place detect"
+--end
 
 
 
-local function check_fits (program)
-	return false, "out of place item fits"
-end
+--local function check_fits (program)
+	--return false, "out of place item fits"
+--end
 
 
 
-local function check_contains (program)
-	return false, "out of place contain item"
-end
+--local function check_contains (program)
+	--return false, "out of place contain item"
+--end
 
 
 
-local function check_counter (program)
-	return false, "out of place counter"
-end
+--local function check_counter (program)
+	--return false, "out of place counter"
+--end
 
 
 
@@ -785,7 +785,7 @@ local function run_condition_variable (program, robot_pos)
 	local cmd = program:cur_command ()
 	local value = program:next_cell ()
 	local var = program:get_value (cmd)
-	local val = ""
+	local val
 
 	if utils.is_inventory_item (cmdstr (value)) then
 		val = value.command
@@ -807,14 +807,12 @@ local function run_condition_variable (program, robot_pos)
 
 	else -- assume lwscratch:cmd_cond_value_equal
 		if utils.is_number_item (value) then
-			val = tonumber (val or 0) or 0
 			var = tonumber (var or 0) or 0
 
 			return var == value
 		end
 
 		return var == val
-
 	end
 end
 
@@ -1248,10 +1246,11 @@ end
 local function run_action_value_assign (program, robot_pos)
 	local cmd = program:cur_command ()
 	local value = program:next_cell (false)
-	local val = ""
 	local name = cmd.value
 
 	if name and name:len () > 0 then
+		local val
+
 		if utils.is_inventory_item (cmdstr (value)) then
 			val = value.command
 		elseif utils.is_name_item (cmdstr (value)) then
@@ -1274,7 +1273,7 @@ local function run_action_value_plus (program, robot_pos)
 	local name = cmd.value
 
 	if name and name:len () > 0 then
-		local val = ""
+		local val
 		local var = program:get_variable (name)
 
 		if utils.is_name_item (cmdstr (value)) then
@@ -1301,7 +1300,7 @@ local function run_action_value_minus (program, robot_pos)
 	local name = cmd.value
 
 	if name and name:len () > 0 then
-		local val = ""
+		local val
 		local var = program:get_variable (name)
 
 		if utils.is_name_item (cmdstr (value)) then
@@ -1324,7 +1323,7 @@ local function run_action_value_multiply (program, robot_pos)
 	local name = cmd.value
 
 	if name and name:len () > 0 then
-		local val = ""
+		local val
 		local var = program:get_variable (name)
 
 		if utils.is_name_item (cmdstr (value)) then
@@ -1347,7 +1346,7 @@ local function run_action_value_divide (program, robot_pos)
 	local name = cmd.value
 
 	if name and name:len () > 0 then
-		local val = ""
+		local val
 		local var = program:get_variable (name)
 
 		if utils.is_name_item (cmdstr (value)) then

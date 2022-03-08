@@ -37,5 +37,6 @@ return
 	["farming:parsley"] = "farming:parsley_1",
 	["farming:soy_pod"] = "farming:soy_1",
 	["farming:vanilla"] = "farming:vanilla_1",
+	["farming:seed_sunflower"] = "farming:sunflower_1",
 	["default:torch"] = { "default:torch_wall", down = "default:torch", up = "default:torch_ceiling" }
 }

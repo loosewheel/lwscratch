@@ -166,7 +166,6 @@ local function after_place_node (pos, placer, itemstack, pointed_thing)
 	local id = 0
 	local name = ""
 	local infotext = ""
-	local inventory = utils.new_inventory ()
 	local owner = ""
 	local persists = 0
 	local unique = false
@@ -366,8 +365,6 @@ local function allow_metadata_inventory_move (pos, from_list, from_index, to_lis
 
 						if stack:get_name () == "lwscratch:cmd_line_insert" then
 							for s = utils.program_inv_size - 10, base, -1 do
-								local item = inv:get_stack (to_list, s)
-
 								inv:set_stack (to_list, s + 10, inv:get_stack (to_list, s))
 								inv:set_stack (to_list, s, nil)
 							end
@@ -376,8 +373,6 @@ local function allow_metadata_inventory_move (pos, from_list, from_index, to_lis
 
 						elseif stack:get_name () == "lwscratch:cmd_line_remove" then
 							for s = base, utils.program_inv_size - 10 do
-								local item = inv:get_stack (to_list, s)
-
 								inv:set_stack (to_list, s, inv:get_stack (to_list, s + 10))
 								inv:set_stack (to_list, s + 10, nil)
 							end

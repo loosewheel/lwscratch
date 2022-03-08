@@ -92,3 +92,8 @@ v0.2.1
 v0.2.2
 *	Sanity check to decoder.
 *	Robots cannot dig nodes with group 'unbreakable'.
+
+
+v0.2.3
+*	Bug fix and cleanup code.
+*	Added farming:sunflower to place_substitutes.lua.

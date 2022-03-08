@@ -1,4 +1,4 @@
-local version = "0.2.2"
+local version = "0.2.3"
 
 
 
@@ -17,7 +17,6 @@ utils.commands_inv_size = 120
 utils.program_inv_size = 500
 
 local modpath = minetest.get_modpath ("lwscratch")
-local worldpath = minetest.get_worldpath ()
 
 
 loadfile (modpath.."/settings.lua") (utils)
@@ -28,7 +27,7 @@ loadfile (modpath.."/program.lua") (utils)
 loadfile (modpath.."/robot_ops.lua") (utils)
 loadfile (modpath.."/robot.lua") (utils)
 loadfile (modpath.."/cassette.lua") (utils)
-loadfile (modpath.."/crafting.lua") (utils)
+loadfile (modpath.."/crafting.lua") ()
 
 
 

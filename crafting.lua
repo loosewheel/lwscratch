@@ -1,7 +1,3 @@
-local utils = ...
-local S = utils.S
-
-
 
 if minetest.global_exists ("default") then
 
